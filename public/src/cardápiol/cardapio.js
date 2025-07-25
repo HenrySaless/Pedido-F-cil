@@ -1,18 +1,101 @@
-// Produtos mockados
+import { listarProdutos, criarPedido } from "../services/firebaseService.js";
+
+// Produtos
 let produtos = [];
-if (localStorage.getItem("estoque")) {
-  produtos = JSON.parse(localStorage.getItem("estoque"));
-  window.PRODUTOS = produtos;
-} else if (window.PRODUTOS) {
-  produtos = window.PRODUTOS;
+
+// Carregar produtos do Firebase
+async function carregarProdutos() {
+  try {
+    const result = await listarProdutos();
+    if (result.success) {
+      produtos = result.produtos;
+    } else {
+      console.error("Erro ao carregar produtos:", result.error);
+      // Usar produtos mockados em caso de erro
+      produtos = [
+        {
+          id: "mock1",
+          nome: "Hambúrguer Clássico",
+          descricao: "Hambúrguer com queijo e salada",
+          preco: 15.9,
+          categoria: "hamburguer",
+          maxQtd: 10,
+          img: "https://via.placeholder.com/150/FF6B35/FFFFFF?text=🍔",
+          loja: "Burger House",
+        },
+        {
+          id: "mock2",
+          nome: "Coca-Cola",
+          descricao: "Refrigerante 350ml",
+          preco: 5.5,
+          categoria: "bebidas",
+          maxQtd: 20,
+          img: "https://via.placeholder.com/150/FF6B35/FFFFFF?text=🥤",
+          loja: "Burger House",
+        },
+        {
+          id: "mock3",
+          nome: "Pizza Margherita",
+          descricao: "Pizza com molho, mussarela e manjericão",
+          preco: 25.9,
+          categoria: "pizza",
+          maxQtd: 8,
+          img: "https://via.placeholder.com/150/FF6B35/FFFFFF?text=🍕",
+          loja: "Pizza Express",
+        },
+      ];
+    }
+  } catch (error) {
+    console.error("Erro ao carregar produtos:", error);
+    // Usar produtos mockados em caso de erro
+    produtos = [
+      {
+        id: "mock1",
+        nome: "Hambúrguer Clássico",
+        descricao: "Hambúrguer com queijo e salada",
+        preco: 15.9,
+        categoria: "hamburguer",
+        maxQtd: 10,
+        img: "https://via.placeholder.com/150/FF6B35/FFFFFF?text=🍔",
+        loja: "Burger House",
+      },
+      {
+        id: "mock2",
+        nome: "Coca-Cola",
+        descricao: "Refrigerante 350ml",
+        preco: 5.5,
+        categoria: "bebidas",
+        maxQtd: 20,
+        img: "https://via.placeholder.com/150/FF6B35/FFFFFF?text=🥤",
+        loja: "Burger House",
+      },
+      {
+        id: "mock3",
+        nome: "Pizza Margherita",
+        descricao: "Pizza com molho, mussarela e manjericão",
+        preco: 25.9,
+        categoria: "pizza",
+        maxQtd: 8,
+        img: "https://via.placeholder.com/150/FF6B35/FFFFFF?text=🍕",
+        loja: "Pizza Express",
+      },
+    ];
+  }
 }
+
+// Carregar produtos na inicialização
+carregarProdutos();
 
 let categoriaAtual = "todos";
 
-function renderProdutos() {
+async function renderProdutos() {
   const lista = document.getElementById("productsList");
   const busca = document.getElementById("searchInput").value.toLowerCase();
   lista.innerHTML = "";
+
+  // Recarregar produtos do Firebase para garantir dados atualizados
+  await carregarProdutos();
+
   let filtrados = produtos.filter(
     (p) =>
       (categoriaAtual === "todos" || p.categoria === categoriaAtual) &&
@@ -45,7 +128,7 @@ function renderProdutos() {
         <span class="max-qtd">Máx: ${produto.maxQtd}</span>
         <button class="add-btn" title="Adicionar ao carrinho" onclick="adicionarProdutoQtdERedirecionar('${
           produto.nome
-        }', ${produto.id})">Carrinho</button>
+        }', '${produto.id}')">Carrinho</button>
       </div>
     `;
     lista.appendChild(card);
@@ -56,6 +139,7 @@ function adicionarProduto(nome) {
   alert(`Produto adicionado! (${nome})`);
 }
 
+// Função para adicionar produto ao carrinho (localStorage temporário)
 function adicionarProdutoQtd(nome, id) {
   const input = document.getElementById("qtd-" + id);
   const qtd = parseInt(input.value, 10);
@@ -68,7 +152,7 @@ function adicionarProdutoQtd(nome, id) {
     input.value = max;
     return;
   }
-  // Adicionar aos pedidos
+  // Adicionar aos pedidos (localStorage temporário)
   let meusPedidos = JSON.parse(localStorage.getItem("meusPedidos") || "[]");
   const produto = produtos.find((p) => p.id === id);
   if (!produto) return;
@@ -91,7 +175,10 @@ function adicionarProdutoQtd(nome, id) {
   input.value = 1;
 }
 
-window.adicionarProdutoQtdERedirecionar = function (nome, id) {
+window.adicionarProdutoQtdERedirecionar = async function (nome, id) {
+  // Recarregar produtos para garantir dados atualizados
+  await carregarProdutos();
+
   const input = document.getElementById("qtd-" + id);
   const qtd = parseInt(input.value, 10);
   const max = parseInt(input.max, 10);
@@ -103,26 +190,35 @@ window.adicionarProdutoQtdERedirecionar = function (nome, id) {
     input.value = max;
     return;
   }
-  let meusPedidos = JSON.parse(localStorage.getItem("meusPedidos") || "[]");
+
   const produto = produtos.find((p) => p.id === id);
   if (!produto) return;
-  const idx = meusPedidos.findIndex((p) => p.id === id);
-  if (idx >= 0) {
-    meusPedidos[idx].qtd += qtd;
-  } else {
-    meusPedidos.push({
-      id: produto.id,
+
+  // Criar pedido no Firebase
+  try {
+    const pedidoData = {
+      produtoId: produto.id,
       nome: produto.nome,
       preco: produto.preco,
       img: produto.img,
-      qtd,
+      qtd: qtd,
       loja: produto.loja || "",
       categoria: produto.categoria,
-    });
+      userId: "usuario_anonimo", // TODO: Usar ID do usuário logado
+      total: produto.preco * qtd,
+    };
+
+    const result = await criarPedido(pedidoData);
+    if (result.success) {
+      alert("Produto adicionado ao carrinho!");
+      input.value = 1;
+      window.location.href = "meus-pedidos.html";
+    } else {
+      alert("Erro ao adicionar produto: " + result.error);
+    }
+  } catch (error) {
+    alert("Erro ao adicionar produto: " + error.message);
   }
-  localStorage.setItem("meusPedidos", JSON.stringify(meusPedidos));
-  input.value = 1;
-  window.location.href = "meus-pedidos.html";
 };
 
 // Filtros de categoria

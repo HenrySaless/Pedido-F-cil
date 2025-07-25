@@ -1,93 +1,74 @@
-// Dados simulados de pedidos
-const pedidos = [
-  {
-    id: 1,
-    cliente: "Maria Silva",
-    itens: "2x Hambúrguer, 1x Suco",
-    status: "pendente",
-    meta: "Hoje, 12:30",
-  },
-  {
-    id: 2,
-    cliente: "João Souza",
-    itens: "1x Pizza, 2x Refrigerante",
-    status: "preparo",
-    meta: "Hoje, 12:45",
-  },
-  {
-    id: 3,
-    cliente: "Ana Lima",
-    itens: "1x Salada, 1x Água",
-    status: "entregue",
-    meta: "Hoje, 11:50",
-  },
-  {
-    id: 4,
-    cliente: "Carlos Mendes",
-    itens: "3x Pastel",
-    status: "pendente",
-    meta: "Hoje, 13:00",
-  },
-];
+import {
+  listarProdutos,
+  atualizarProduto,
+  excluirProduto,
+  listarPedidos,
+  atualizarStatusPedido as atualizarStatusPedidoFirebase,
+} from "../services/firebaseService.js";
 
+// Função para renderizar pedidos simulados (mantida para compatibilidade)
 function renderPedidos() {
   const ordersList = document.getElementById("ordersList");
-  ordersList.innerHTML = "";
-  pedidos.forEach((pedido, idx) => {
-    const card = document.createElement("div");
-    card.className = "order-card";
-    card.innerHTML = `
-      <div class="order-header">
-        <span class="order-client">${pedido.cliente}</span>
-        <span class="order-status ${pedido.status}">${
-      pedido.status.charAt(0).toUpperCase() + pedido.status.slice(1)
-    }</span>
-      </div>
-      <div class="order-items">${pedido.itens}</div>
-      <div class="order-meta">${pedido.meta}</div>
-      <div class="order-actions">
-        <button class="btn-primary" onclick="verDetalhes(${
-          pedido.id
-        })">Ver Detalhes</button>
-        <button class="btn-primary" onclick="atualizarStatus(${
-          pedido.id
-        })">Atualizar</button>
-      </div>
-    `;
-    ordersList.appendChild(card);
-  });
+  if (!ordersList) return;
+
+  ordersList.innerHTML =
+    '<p style="text-align:center;color:#666;padding:20px;">Carregando pedidos...</p>';
+
+  // Esta função agora será substituída por renderPedidosUsuarios
+  // que carrega dados reais do Firebase
 }
 
 function verDetalhes(id) {
-  const pedido = pedidos.find((p) => p.id === id);
-  alert(
-    `Detalhes do pedido de ${pedido.cliente}:\nItens: ${pedido.itens}\nStatus: ${pedido.status}\n${pedido.meta}`
-  );
+  // Esta função será substituída pela versão do Firebase
+  alert("Funcionalidade em atualização...");
 }
 
 function atualizarStatus(id) {
-  const pedido = pedidos.find((p) => p.id === id);
-  if (pedido.status === "pendente") pedido.status = "preparo";
-  else if (pedido.status === "preparo") pedido.status = "entregue";
-  else pedido.status = "pendente";
-  renderPedidos();
-  atualizarContadores();
+  // Esta função será substituída pela versão do Firebase
+  alert("Funcionalidade em atualização...");
 }
 
-function atualizarContadores() {
-  document.getElementById("totalPedidosNum").textContent = pedidos.length;
-  document.getElementById("pendentesNum").textContent = pedidos.filter(
-    (p) => p.status === "pendente"
-  ).length;
-  document.getElementById("entreguesNum").textContent = pedidos.filter(
-    (p) => p.status === "entregue"
-  ).length;
-  // Receita simulada
-  document.getElementById("receitaNum").textContent =
-    "R$ " +
-    (pedidos.length * 19.5).toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-    });
+// Função para atualizar contadores com dados reais do Firebase
+async function atualizarContadores() {
+  try {
+    const result = await listarPedidos();
+    if (result.success) {
+      const pedidos = result.pedidos;
+
+      // Contadores baseados em dados reais
+      document.getElementById("totalPedidosNum").textContent = pedidos.length;
+      document.getElementById("pendentesNum").textContent = pedidos.filter(
+        (p) => p.status === "pendente"
+      ).length;
+      document.getElementById("entreguesNum").textContent = pedidos.filter(
+        (p) => p.status === "entregue"
+      ).length;
+
+      // Calcular receita real
+      const receitaTotal = pedidos.reduce((total, pedido) => {
+        return total + (pedido.total || pedido.preco * pedido.qtd || 0);
+      }, 0);
+
+      document.getElementById("receitaNum").textContent =
+        "R$ " +
+        receitaTotal.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+        });
+    } else {
+      // Se não conseguir carregar dados, mostrar zeros
+      document.getElementById("totalPedidosNum").textContent = "0";
+      document.getElementById("pendentesNum").textContent = "0";
+      document.getElementById("entreguesNum").textContent = "0";
+      document.getElementById("receitaNum").textContent = "R$ 0,00";
+    }
+  } catch (error) {
+    console.error("Erro ao atualizar contadores:", error);
+    // Em caso de erro, mostrar zeros
+    document.getElementById("totalPedidosNum").textContent = "0";
+    document.getElementById("pendentesNum").textContent = "0";
+    document.getElementById("entreguesNum").textContent = "0";
+    document.getElementById("receitaNum").textContent = "R$ 0,00";
+  }
 }
 
 document.getElementById("novoPedidoBtn").onclick = function () {
@@ -100,44 +81,219 @@ document.getElementById("configuracoesBtn").onclick = function () {
   alert("Funcionalidade de configurações em desenvolvimento!");
 };
 
-function renderEstoqueAdmin() {
+async function renderEstoqueAdmin() {
   const list = document.getElementById("estoqueList");
   if (!list) return;
-  list.innerHTML = "";
-  window.PRODUTOS.forEach((produto) => {
-    const div = document.createElement("div");
-    div.className = "order-card";
-    div.innerHTML = `
-      <div class="order-header">
-        <span class="order-client">${produto.nome}</span>
-        <span class="order-status">Estoque: <input type='number' min='0' value='${
-          produto.maxQtd
-        }' style='width:60px;border-radius:8px;border:1px solid #eee;padding:2px 6px;' onchange='atualizarEstoque(${
-      produto.id
-    }, this.value)'></span>
-      </div>
-      <div class="order-items">${produto.descricao || ""}</div>
-      <div class="order-meta">Categoria: ${
-        produto.categoria
-      } | Preço: R$ ${produto.preco.toFixed(2).replace(".", ",")}</div>
-    `;
-    list.appendChild(div);
-  });
-}
-window.atualizarEstoque = function (id, novoValor) {
-  const prod = window.PRODUTOS.find((p) => p.id === id);
-  if (prod) prod.maxQtd = Math.max(0, parseInt(novoValor, 10));
-  localStorage.setItem("estoque", JSON.stringify(window.PRODUTOS));
-  renderEstoqueAdmin();
-};
-if (localStorage.getItem("estoque")) {
-  window.PRODUTOS = JSON.parse(localStorage.getItem("estoque"));
+
+  list.innerHTML =
+    '<p style="text-align:center;color:#666;padding:20px;">Carregando produtos...</p>';
+
+  try {
+    const result = await listarProdutos();
+    if (!result.success) {
+      list.innerHTML =
+        '<p style="text-align:center;color:#dc3545;padding:20px;">Erro ao carregar produtos: ' +
+        result.error +
+        "</p>";
+      return;
+    }
+
+    const produtos = result.produtos;
+
+    if (produtos.length === 0) {
+      list.innerHTML =
+        '<p style="text-align:center;color:#666;padding:20px;">Nenhum produto cadastrado.</p>';
+      return;
+    }
+
+    list.innerHTML = "";
+    produtos.forEach((produto) => {
+      const div = document.createElement("div");
+      div.className = "order-card";
+      div.innerHTML = `
+        <div class="order-header">
+          <span class="order-client">${produto.nome}</span>
+          <span class="order-status">Estoque: <input type='number' min='0' value='${
+            produto.maxQtd || 0
+          }' style='width:60px;border-radius:8px;border:1px solid #eee;padding:2px 6px;' onchange='atualizarEstoque("${
+        produto.id
+      }", this.value)'></span>
+        </div>
+        <div class="order-items">${produto.descricao || ""}</div>
+        <div class="order-meta">Categoria: ${
+          produto.categoria || "Não definida"
+        } | Preço: R$ ${(produto.preco || 0).toFixed(2).replace(".", ",")}</div>
+        <div class="order-actions">
+          <button class="btn-primary" onclick="editarProduto('${
+            produto.id
+          }')">✏️ Editar</button>
+          <button class="btn-danger" onclick="excluirProduto('${
+            produto.id
+          }')">🗑️ Excluir</button>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  } catch (error) {
+    list.innerHTML =
+      '<p style="text-align:center;color:#dc3545;padding:20px;">Erro ao carregar produtos: ' +
+      error.message +
+      "</p>";
+  }
 }
 
+// Funções CRUD para produtos
+window.editarProduto = function (id) {
+  // Salvar ID do produto para edição
+  localStorage.setItem("produtoEditandoId", id);
+  window.location.href = "../novo-produto/index.html?edit=true";
+};
+
+window.excluirProduto = async function (id) {
+  if (confirm("Tem certeza que deseja excluir este produto?")) {
+    try {
+      const result = await excluirProduto(id);
+      if (result.success) {
+        alert("Produto excluído com sucesso!");
+        renderEstoqueAdmin();
+      } else {
+        alert("Erro ao excluir produto: " + result.error);
+      }
+    } catch (error) {
+      alert("Erro ao excluir produto: " + error.message);
+    }
+  }
+};
+
+window.atualizarEstoque = async function (id, novoValor) {
+  try {
+    const result = await atualizarProduto(id, {
+      maxQtd: Math.max(0, parseInt(novoValor, 10)),
+    });
+    if (!result.success) {
+      alert("Erro ao atualizar estoque: " + result.error);
+    }
+  } catch (error) {
+    alert("Erro ao atualizar estoque: " + error.message);
+  }
+};
+
+// Função para listar pedidos dos usuários
+async function renderPedidosUsuarios() {
+  const ordersList = document.getElementById("ordersList");
+  if (!ordersList) return;
+
+  ordersList.innerHTML =
+    '<p style="text-align:center;color:#666;padding:20px;">Carregando pedidos...</p>';
+
+  try {
+    const result = await listarPedidos();
+    if (!result.success) {
+      ordersList.innerHTML =
+        '<p style="text-align:center;color:#dc3545;padding:20px;">Erro ao carregar pedidos: ' +
+        result.error +
+        "</p>";
+      return;
+    }
+
+    const pedidos = result.pedidos;
+
+    if (pedidos.length === 0) {
+      ordersList.innerHTML =
+        '<p style="text-align:center;color:#666;padding:20px;">Nenhum pedido realizado.</p>';
+      return;
+    }
+
+    ordersList.innerHTML = "";
+    pedidos.forEach((pedido, idx) => {
+      const card = document.createElement("div");
+      card.className = "order-card";
+      card.innerHTML = `
+        <div class="order-header">
+          <span class="order-client">${pedido.nome}</span>
+          <span class="order-status ${pedido.status || "pendente"}">${
+        (pedido.status || "pendente").charAt(0).toUpperCase() +
+        (pedido.status || "pendente").slice(1)
+      }</span>
+        </div>
+        <div class="order-items">${pedido.qtd}x ${pedido.nome}</div>
+        <div class="order-meta">Preço: R$ ${(pedido.preco * pedido.qtd)
+          .toFixed(2)
+          .replace(".", ",")}</div>
+        <div class="order-actions">
+          <button class="btn-primary" onclick="verDetalhesPedido('${
+            pedido.id
+          }')">Ver Detalhes</button>
+          <button class="btn-primary" onclick="atualizarStatusPedido('${
+            pedido.id
+          }')">Atualizar</button>
+        </div>
+      `;
+      ordersList.appendChild(card);
+    });
+  } catch (error) {
+    ordersList.innerHTML =
+      '<p style="text-align:center;color:#dc3545;padding:20px;">Erro ao carregar pedidos: ' +
+      error.message +
+      "</p>";
+  }
+}
+
+window.verDetalhesPedido = async function (id) {
+  try {
+    const result = await listarPedidos();
+    if (result.success) {
+      const pedido = result.pedidos.find((p) => p.id === id);
+      if (pedido) {
+        alert(
+          `Detalhes do pedido:\nProduto: ${pedido.nome}\nQuantidade: ${
+            pedido.qtd
+          }\nPreço unitário: R$ ${pedido.preco.toFixed(2)}\nPreço total: R$ ${(
+            pedido.preco * pedido.qtd
+          ).toFixed(2)}\nCategoria: ${
+            pedido.categoria || "Não definida"
+          }\nStatus: ${pedido.status}`
+        );
+      }
+    }
+  } catch (error) {
+    alert("Erro ao buscar detalhes do pedido: " + error.message);
+  }
+};
+
+window.atualizarStatusPedido = async function (id) {
+  try {
+    const result = await listarPedidos();
+    if (result.success) {
+      const pedido = result.pedidos.find((p) => p.id === id);
+      if (pedido) {
+        let novoStatus = "pendente";
+        if (!pedido.status || pedido.status === "pendente")
+          novoStatus = "preparo";
+        else if (pedido.status === "preparo") novoStatus = "entregue";
+
+        const updateResult = await atualizarStatusPedidoFirebase(
+          id,
+          novoStatus
+        );
+        if (updateResult.success) {
+          renderPedidosUsuarios();
+          atualizarContadores();
+        } else {
+          alert("Erro ao atualizar status: " + updateResult.error);
+        }
+      }
+    }
+  } catch (error) {
+    alert("Erro ao atualizar status do pedido: " + error.message);
+  }
+};
+
 document.addEventListener("DOMContentLoaded", function () {
-  renderPedidos();
+  // Remover renderPedidos() - agora usa renderPedidosUsuarios() que carrega dados reais
   atualizarContadores();
   renderEstoqueAdmin();
+  renderPedidosUsuarios();
   // Botão para cadastro de novo produto
   const btn = document.getElementById("novoProdutoBtn");
   if (btn)

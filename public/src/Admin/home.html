@@ -16,7 +16,7 @@
     <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <img src="../imgs/logo.png" alt="Mascote" class="logo-mascot" />
+        <img src="../publicssss/logo.png" alt="Mascote" class="logo-mascot" />
         <span class="platform-name">Pedido Fácil Admin</span>
       </div>
       <!-- <div class="header-right">
@@ -79,6 +79,14 @@
         </button>
       </section>
 
+      <!-- Pedidos dos Usuários -->
+      <section class="orders-section">
+        <h2 class="section-title">Pedidos dos Usuários</h2>
+        <div class="orders-list" id="ordersList">
+          <!-- Pedidos renderizados via JS -->
+        </div>
+      </section>
+
       <!-- Ações rápidas -->
       <aside class="quick-actions">
         <button class="btn-primary" id="novoPedidoBtn">➕ Novo Pedido</button>
@@ -96,7 +104,7 @@
       <span>&copy; 2024 PedidoFácil Admin</span>
     </footer>
 
-    <script src="index.js"></script>
+    <script src="index.js" type="module"></script>
     <script>
       document.getElementById("novoProdutoBtn").onclick = function () {
         window.location.href = "../novo-produto/index.html";
