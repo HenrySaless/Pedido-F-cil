@@ -143,3 +143,40 @@ document
 
 // Inicialização
 document.addEventListener("DOMContentLoaded", renderProdutos);
+
+// Drawer (menu lateral)
+const menuBtn = document.getElementById("menuBtn");
+const drawerMenu = document.getElementById("drawerMenu");
+const drawerOverlay = document.getElementById("drawerOverlay");
+const drawerCloseBtn = document.getElementById("drawerCloseBtn");
+
+function openDrawer() {
+  drawerMenu.classList.add("active");
+  drawerOverlay.classList.add("active");
+}
+function closeDrawer() {
+  drawerMenu.classList.remove("active");
+  drawerOverlay.classList.remove("active");
+}
+menuBtn.addEventListener("click", openDrawer);
+drawerOverlay.addEventListener("click", closeDrawer);
+drawerCloseBtn.addEventListener("click", closeDrawer);
+
+// Redirecionamento dos botões do menu
+const drawerHome = document.getElementById("drawerHome");
+const drawerPedidos = document.getElementById("drawerPedidos");
+const drawerEnderecos = document.getElementById("drawerEnderecos");
+const drawerConfig = document.getElementById("drawerConfig");
+
+drawerHome.onclick = function () {
+  window.location.href = "cardapio.html";
+};
+drawerPedidos.onclick = function () {
+  window.location.href = "meus-pedidos.html";
+};
+drawerEnderecos.onclick = function () {
+  alert("Funcionalidade de endereços em breve!");
+};
+drawerConfig.onclick = function () {
+  alert("Funcionalidade de configurações em breve!");
+};

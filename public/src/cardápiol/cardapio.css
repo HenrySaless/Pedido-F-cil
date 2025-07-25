@@ -2,7 +2,7 @@
 :root {
   --primary: #e75a1a;
   --secondary: #ff7a00;
-  --background: #f5f5f5;
+  --background: #fafafa;
   --card-bg: #fff;
   --text-primary: #1a1a1a;
   --text-secondary: #4f4f4f;
@@ -151,12 +151,19 @@ body {
   box-shadow: var(--shadow);
   min-height: 90px;
 }
-.promo-img {
+/* .promo-img {
   width: 90px;
   height: 90px;
   object-fit: cover;
   border-radius: 0 20px 20px 0;
+} */
+.promo-title {
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 600;
+  margin-left: 18px;
 }
+
 .promo-info {
   flex: 1;
   padding: 0 18px;
@@ -349,6 +356,80 @@ body {
   font-size: 0.8rem;
   font-family: inherit;
 }
+/* Drawer (menu lateral) */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.18);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.drawer-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.drawer-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  max-width: 90vw;
+  height: 100vh;
+  background: var(--card-bg);
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.08);
+  z-index: 120;
+  transform: translateX(-100%);
+  transition: transform 0.32s cubic-bezier(0.4, 1.4, 0.6, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0 0 0;
+}
+.drawer-menu.active {
+  transform: translateX(0);
+}
+.drawer-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--primary);
+  align-self: flex-end;
+  margin: 0 18px 12px 0;
+  cursor: pointer;
+}
+.drawer-list {
+  list-style: none;
+  padding: 0 0 0 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.drawer-link {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-family: inherit;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 28px;
+  border-radius: 0 999px 999px 0;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.drawer-link:hover,
+.drawer-link.active {
+  background: var(--primary);
+  color: #fff;
+}
 @media (max-width: 600px) {
   .header {
     flex-direction: column;
@@ -381,5 +462,14 @@ body {
   }
   .category-filters {
     padding: 12px 4px 0 4px;
+  }
+  .drawer-menu {
+    width: 90vw;
+    max-width: 98vw;
+    padding-top: 12px;
+  }
+  .drawer-link {
+    font-size: 1rem;
+    padding: 12px 18px;
   }
 }

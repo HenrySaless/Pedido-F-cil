@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
+    <link rel="icon" type="image/png" href="../publicssss/logo.png" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cardápio - PedidoFácil</title>
     <link rel="stylesheet" href="cardapio.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ancizar+Serif:ital,wght@0,300..900;1,300..900&family=Geist:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Playwrite+HU:wght@100..400&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
       rel="stylesheet"
     />
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -16,7 +23,7 @@
     <header class="header">
       <div class="header-left">
         <span class="logo-placeholder">
-          <img src="../imgs/logo.png" alt="" width="44px" height="44px" />
+          <img src="../publicssss/logo.png" alt="" width="44px" height="44px" />
         </span>
         <span class="app-name">PedidoFácil</span>
       </div>
@@ -24,12 +31,42 @@
         <button class="icon-btn" id="menuBtn" aria-label="Menu">
           <i data-lucide="menu"></i>
         </button>
-        <span class="user-name">Olá, João!</span>
+        <span class="user-name">Olá, (usuario)</span>
         <span class="user-location"
-          ><i data-lucide="map-pin"></i> Centro, SP</span
+          ><i data-lucide="map-pin"></i> Localização do usuário</span
         >
       </div>
     </header>
+
+    <!-- Menu lateral (drawer) -->
+    <div id="drawerOverlay" class="drawer-overlay"></div>
+    <nav id="drawerMenu" class="drawer-menu">
+      <button class="drawer-close" id="drawerCloseBtn" aria-label="Fechar menu">
+        ×
+      </button>
+      <ul class="drawer-list">
+        <li>
+          <button class="drawer-link" id="drawerHome">
+            <span>🏠</span> Home
+          </button>
+        </li>
+        <li>
+          <button class="drawer-link" id="drawerPedidos">
+            <span>📦</span> Meus pedidos
+          </button>
+        </li>
+        <li>
+          <button class="drawer-link" id="drawerEnderecos">
+            <span>📍</span> Endereços
+          </button>
+        </li>
+        <li>
+          <button class="drawer-link" id="drawerConfig">
+            <span>⚙️</span> Config
+          </button>
+        </li>
+      </ul>
+    </nav>
 
     <!-- Busca -->
     <section class="search-section">
@@ -48,11 +85,7 @@
 
     <!-- Banner Promocional -->
     <section class="promo-banner">
-      <img
-        src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80"
-        alt="Promoção"
-        class="promo-img"
-      />
+      <span class="promo-title">Promoção</span>
       <div class="promo-info">
         <span class="promo-text">Compre 1, leve 2!</span>
         <button class="promo-btn">Aproveitar</button>
@@ -74,20 +107,7 @@
     </main>
 
     <!-- Rodapé -->
-    <footer class="footer-nav">
-      <button class="footer-btn active" type="button">
-        <span>🏠</span><small>Home</small>
-      </button>
-      <button class="footer-btn" type="button" id="btnMeusPedidos">
-        <span>📦</span><small>Meus pedidos</small>
-      </button>
-      <button class="footer-btn" type="button">
-        <span>📍</span><small>Endereços</small>
-      </button>
-      <button class="footer-btn" type="button">
-        <span>⚙️</span><small>Config</small>
-      </button>
-    </footer>
+    <footer class="footer-nav" style="display: none"></footer>
 
     <script src="cardapio.js"></script>
     <script>
