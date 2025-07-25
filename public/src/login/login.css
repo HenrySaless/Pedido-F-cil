@@ -93,7 +93,9 @@ body {
   margin-bottom: 2px;
   transition: var(--transition);
   outline: none;
+  box-sizing: border-box;
 }
+
 .auth-input:focus {
   box-shadow: 0 0 0 2px var(--primary);
 }

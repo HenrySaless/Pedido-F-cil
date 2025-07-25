@@ -1,11 +1,1 @@
-{
-  "rewrites": [
-    { "source": "/", "destination": "/src/index.html" },
-    { "source": "/login", "destination": "/src/login/login.html" },
-    { "source": "/cardapio", "destination": "/src/cardápiol/cardapio.html" },
-    {
-      "source": "/meus-pedidos",
-      "destination": "/src/cardápiol/meus-pedidos.html"
-    }
-  ]
-}
+{ "rewrites": [{ "source": "/(.*)", "destination": "/" }] }
