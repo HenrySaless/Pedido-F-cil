@@ -1,4 +1,4 @@
-import { auth } from "../src/firebase.js";
+import { auth } from "../firebase.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 const senhaInput = document.getElementById("senha");
@@ -25,14 +25,4 @@ form.addEventListener("submit", async function (e) {
   } catch (err) {
     alert("Erro: " + err.message);
   }
-});
-
-// Botões sociais
-const googleBtn = document.querySelector(".social-btn.google");
-googleBtn.addEventListener("click", function () {
-  alert("Login com Google em breve!");
-});
-const appleBtn = document.querySelector(".social-btn.apple");
-appleBtn.addEventListener("click", function () {
-  alert("Login com Apple em breve!");
 });

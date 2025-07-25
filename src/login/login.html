@@ -13,7 +13,6 @@
   <body>
     <main class="auth-container">
       <div class="auth-logo">
-        <!-- Logo minimalista -->
         <span class="logo-icon">🍽️</span>
       </div>
       <h1 class="auth-title">Entrar</h1>
@@ -26,7 +25,6 @@
           placeholder="Seu e-mail"
           required
         />
-
         <label class="auth-label" for="senha">Senha</label>
         <div class="input-password-wrapper">
           <input
@@ -45,26 +43,22 @@
             👁️
           </button>
         </div>
-
         <div class="auth-checkbox-row">
           <input type="checkbox" id="termos" class="auth-checkbox" required />
           <label for="termos" class="checkbox-label"
             >Aceito os <a href="#">termos de uso</a></label
           >
         </div>
-
         <button type="submit" class="auth-btn-primary">
           Continuar
           <span class="arrow-icon">→</span>
         </button>
       </form>
-
       <div class="auth-divider">
         <span class="divider-line"></span>
         <span class="divider-text">ou</span>
         <span class="divider-line"></span>
       </div>
-
       <div class="social-buttons">
         <button class="social-btn google" type="button">
           <span class="social-icon">G</span>
@@ -76,6 +70,6 @@
         </button>
       </div>
     </main>
-    <script src="login.js"></script>
+    <script type="module" src="login.js"></script>
   </body>
 </html>
