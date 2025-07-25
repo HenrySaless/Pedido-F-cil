@@ -127,31 +127,9 @@
           <li><a href="#produtos">Produtos</a></li>
           <li><a href="#contato">Contato</a></li>
         </ul>
-        <div class="login-dropdown">
-          <button class="btn btn-primary" id="btnEntrar">Entrar ▼</button>
-          <div class="dropdown-menu" id="dropdownMenu">
-            <a href="login/login.html" class="dropdown-item"
-              >👤 Login Cliente</a
-            >
-            <a href="admin-login/admin-login.html" class="dropdown-item"
-              >🔐 Login Admin</a
-            >
-            <a href="criar-super-admin.html" class="dropdown-item"
-              >👑 Criar Super Admin</a
-            >
-            <a href="criar-admin.html" class="dropdown-item">⚙️ Criar Admin</a>
-            <a href="debug-admin.html" class="dropdown-item">🔍 Debug Admin</a>
-            <a href="test-admin-login.html" class="dropdown-item"
-              >🧪 Teste Login</a
-            >
-            <a href="recriar-super-admin.html" class="dropdown-item"
-              >🔄 Recriar Super Admin</a
-            >
-            <a href="criar-admin-manual.html" class="dropdown-item"
-              >🔧 Criar Admin Manual</a
-            >
-          </div>
-        </div>
+        <a href="login/login.html" class="btn btn-primary" id="btnEntrar"
+          >Entrar</a
+        >
       </div>
     </nav>
 
@@ -211,28 +189,7 @@
           window.location.href = "cadastro/cadastro.html";
         });
 
-      // Funcionalidade do dropdown de login
-      const btnEntrar = document.getElementById("btnEntrar");
-      const dropdownMenu = document.getElementById("dropdownMenu");
-
-      btnEntrar.addEventListener("click", function (e) {
-        e.preventDefault();
-        dropdownMenu.classList.toggle("show");
-      });
-
-      // Fechar dropdown ao clicar fora
-      document.addEventListener("click", function (e) {
-        if (!btnEntrar.contains(e.target) && !dropdownMenu.contains(e.target)) {
-          dropdownMenu.classList.remove("show");
-        }
-      });
-
-      // Fechar dropdown ao pressionar ESC
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-          dropdownMenu.classList.remove("show");
-        }
-      });
+      // Botão Entrar agora redireciona diretamente para login
     </script>
   </body>
 </html>
