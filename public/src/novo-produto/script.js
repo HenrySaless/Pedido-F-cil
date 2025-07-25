@@ -11,18 +11,90 @@ const imgUploadArea = document.getElementById("imgUploadArea");
 const imgBtn = document.getElementById("imgBtn");
 let imgDataUrl = "";
 
+// Função para comprimir e redimensionar imagem
+function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.8) {
+  return new Promise((resolve) => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    img.onload = function () {
+      // Calcular novas dimensões mantendo proporção
+      let { width, height } = img;
+
+      if (width > maxWidth) {
+        height = (height * maxWidth) / width;
+        width = maxWidth;
+      }
+
+      if (height > maxHeight) {
+        width = (width * maxHeight) / height;
+        height = maxHeight;
+      }
+
+      // Configurar canvas
+      canvas.width = width;
+      canvas.height = height;
+
+      // Desenhar imagem redimensionada
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Converter para base64 com compressão
+      const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+      resolve(compressedDataUrl);
+    };
+
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 imgBtn.onclick = () => imgInput.click();
 imgUploadArea.onclick = (e) => {
   if (e.target === imgUploadArea || e.target === imgPreview) imgInput.click();
 };
-imgInput.onchange = function () {
+
+imgInput.onchange = async function () {
   if (this.files && this.files[0]) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      imgPreview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">`;
-      imgDataUrl = e.target.result;
-    };
-    reader.readAsDataURL(this.files[0]);
+    const file = this.files[0];
+
+    // Mostrar loading
+    imgPreview.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;">🔄 Processando imagem...</div>';
+
+    try {
+      // Comprimir imagem
+      const compressedImage = await compressImage(file);
+
+      // Verificar tamanho
+      const sizeInBytes = Math.ceil((compressedImage.length * 3) / 4);
+      const sizeInMB = sizeInBytes / (1024 * 1024);
+
+      if (sizeInMB > 0.8) {
+        // Se ainda estiver muito grande, comprimir mais
+        const moreCompressed = await compressImage(file, 600, 450, 0.6);
+        imgDataUrl = moreCompressed;
+        imgPreview.innerHTML = `<img src="${moreCompressed}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+        <div style="position:absolute;bottom:5px;right:5px;background:rgba(0,0,0,0.7);color:white;padding:2px 6px;border-radius:4px;font-size:0.7rem;">Comprimida</div>`;
+      } else {
+        imgDataUrl = compressedImage;
+        imgPreview.innerHTML = `<img src="${compressedImage}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">`;
+      }
+
+      console.log(`Imagem processada: ${sizeInMB.toFixed(2)}MB`);
+
+      // Mostrar informações da imagem
+      const imgInfo = document.getElementById("imgInfo");
+      const imgSize = document.getElementById("imgSize");
+      imgSize.textContent = `${sizeInMB.toFixed(2)}MB`;
+      imgInfo.style.display = "block";
+    } catch (error) {
+      console.error("Erro ao processar imagem:", error);
+      imgPreview.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#dc3545;">❌ Erro ao processar imagem</div>';
+
+      // Ocultar informações da imagem
+      document.getElementById("imgInfo").style.display = "none";
+    }
   }
 };
 imgUploadArea.ondragover = (e) => {
@@ -32,12 +104,12 @@ imgUploadArea.ondragover = (e) => {
 imgUploadArea.ondragleave = (e) => {
   imgUploadArea.classList.remove("dragover");
 };
-imgUploadArea.ondrop = (e) => {
+imgUploadArea.ondrop = async (e) => {
   e.preventDefault();
   imgUploadArea.classList.remove("dragover");
   if (e.dataTransfer.files && e.dataTransfer.files[0]) {
     imgInput.files = e.dataTransfer.files;
-    imgInput.onchange();
+    await imgInput.onchange();
   }
 };
 
@@ -166,6 +238,19 @@ form.onsubmit = async function (e) {
 
   if (!nome || !imgDataUrl || preco === "" || !tempoEntrega || !categoria) {
     alert("Preencha todos os campos obrigatórios e selecione uma imagem!");
+    return;
+  }
+
+  // Verificar tamanho da imagem
+  const sizeInBytes = Math.ceil((imgDataUrl.length * 3) / 4);
+  const sizeInMB = sizeInBytes / (1024 * 1024);
+
+  if (sizeInMB > 1) {
+    alert(
+      `Imagem muito grande (${sizeInMB.toFixed(
+        2
+      )}MB). Tente uma imagem menor ou com menor qualidade.`
+    );
     return;
   }
   if (quantidade < 1) {

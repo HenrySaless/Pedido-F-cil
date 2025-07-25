@@ -169,6 +169,20 @@ body {
   box-shadow: 0 4px 12px rgba(231, 90, 26, 0.3);
 }
 
+.img-info {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.img-info small {
+  font-weight: 500;
+}
+
 /* Labels e inputs */
 .cadastro-form label {
   font-size: 1rem;

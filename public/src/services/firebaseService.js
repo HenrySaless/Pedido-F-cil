@@ -11,6 +11,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  setDoc,
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 // ===== SERVIÇOS DE PRODUTOS =====
@@ -186,6 +187,265 @@ export async function limparPedidosUsuario(userId) {
     return { success: true };
   } catch (error) {
     console.error("Erro ao limpar pedidos do usuário:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// ===== SERVIÇOS DE AUTENTICAÇÃO ADMIN =====
+
+// Verificar se usuário é admin
+export async function verificarAdmin(userId) {
+  try {
+    const docRef = doc(db, "usuarios", userId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      return { success: true, isAdmin: userData.isAdmin === true };
+    } else {
+      return { success: false, isAdmin: false };
+    }
+  } catch (error) {
+    console.error("Erro ao verificar admin:", error);
+    return { success: false, isAdmin: false, error: error.message };
+  }
+}
+
+// Criar usuário admin
+export async function criarAdmin(adminData) {
+  try {
+    // Usa o uid do Firebase Auth como ID do documento
+    const docRef = doc(db, "usuarios", adminData.uid);
+    await setDoc(docRef, {
+      ...adminData,
+      isAdmin: true,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true, id: adminData.uid };
+  } catch (error) {
+    console.error("Erro ao criar admin:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Atualizar perfil de usuário para admin
+export async function tornarAdmin(userId) {
+  try {
+    const docRef = doc(db, "usuarios", userId);
+    await updateDoc(docRef, {
+      isAdmin: true,
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao tornar admin:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Remover perfil admin
+export async function removerAdmin(userId) {
+  try {
+    const docRef = doc(db, "usuarios", userId);
+    await updateDoc(docRef, {
+      isAdmin: false,
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao remover admin:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Listar todos os admins
+export async function listarAdmins() {
+  try {
+    const q = query(collection(db, "usuarios"), where("isAdmin", "==", true));
+    const querySnapshot = await getDocs(q);
+    const admins = [];
+    querySnapshot.forEach((doc) => {
+      admins.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    return { success: true, admins };
+  } catch (error) {
+    console.error("Erro ao listar admins:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// ===== SERVIÇOS DE SUPER ADMIN =====
+
+// Verificar se usuário é super admin
+export async function verificarSuperAdmin(userId) {
+  try {
+    const docRef = doc(db, "usuarios", userId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      return { success: true, isSuperAdmin: userData.isSuperAdmin === true };
+    } else {
+      return { success: false, isSuperAdmin: false };
+    }
+  } catch (error) {
+    console.error("Erro ao verificar super admin:", error);
+    return { success: false, isSuperAdmin: false, error: error.message };
+  }
+}
+
+// Criar super admin (apenas para configuração inicial)
+export async function criarSuperAdmin(superAdminData) {
+  try {
+    // Usa o uid do Firebase Auth como ID do documento
+    const docRef = doc(db, "usuarios", superAdminData.uid);
+    await setDoc(docRef, {
+      ...superAdminData,
+      isAdmin: true,
+      isSuperAdmin: true,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true, id: superAdminData.uid };
+  } catch (error) {
+    console.error("Erro ao criar super admin:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Criar admin (apenas super admins podem fazer isso)
+export async function criarAdminPorSuperAdmin(adminData, superAdminId) {
+  try {
+    // Verifica se quem está criando é super admin
+    const superAdminCheck = await verificarSuperAdmin(superAdminId);
+    if (!superAdminCheck.success || !superAdminCheck.isSuperAdmin) {
+      return {
+        success: false,
+        error: "Apenas super administradores podem criar novos admins.",
+      };
+    }
+
+    // Usa o uid do Firebase Auth como ID do documento
+    const docRef = doc(db, "usuarios", adminData.uid);
+    await setDoc(docRef, {
+      ...adminData,
+      isAdmin: true,
+      isSuperAdmin: false, // Novos admins criados não são super admins
+      createdBy: superAdminId, // Quem criou
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true, id: adminData.uid };
+  } catch (error) {
+    console.error("Erro ao criar admin:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Tornar usuário super admin (apenas super admins podem fazer isso)
+export async function tornarSuperAdmin(userId, superAdminId) {
+  try {
+    // Verifica se quem está fazendo é super admin
+    const superAdminCheck = await verificarSuperAdmin(superAdminId);
+    if (!superAdminCheck.success || !superAdminCheck.isSuperAdmin) {
+      return {
+        success: false,
+        error:
+          "Apenas super administradores podem promover outros super admins.",
+      };
+    }
+
+    const docRef = doc(db, "usuarios", userId);
+    await updateDoc(docRef, {
+      isAdmin: true,
+      isSuperAdmin: true,
+      promotedBy: superAdminId,
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao tornar super admin:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Remover super admin (apenas super admins podem fazer isso)
+export async function removerSuperAdmin(userId, superAdminId) {
+  try {
+    // Verifica se quem está fazendo é super admin
+    const superAdminCheck = await verificarSuperAdmin(superAdminId);
+    if (!superAdminCheck.success || !superAdminCheck.isSuperAdmin) {
+      return {
+        success: false,
+        error:
+          "Apenas super administradores podem remover outros super admins.",
+      };
+    }
+
+    // Não permite remover a si mesmo
+    if (userId === superAdminId) {
+      return {
+        success: false,
+        error:
+          "Você não pode remover seus próprios privilégios de super admin.",
+      };
+    }
+
+    const docRef = doc(db, "usuarios", userId);
+    await updateDoc(docRef, {
+      isSuperAdmin: false,
+      removedBy: superAdminId,
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao remover super admin:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Listar todos os super admins
+export async function listarSuperAdmins() {
+  try {
+    const q = query(
+      collection(db, "usuarios"),
+      where("isSuperAdmin", "==", true)
+    );
+    const querySnapshot = await getDocs(q);
+    const superAdmins = [];
+    querySnapshot.forEach((doc) => {
+      superAdmins.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    return { success: true, superAdmins };
+  } catch (error) {
+    console.error("Erro ao listar super admins:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Listar admins criados por um super admin específico
+export async function listarAdminsPorSuperAdmin(superAdminId) {
+  try {
+    const q = query(
+      collection(db, "usuarios"),
+      where("createdBy", "==", superAdminId)
+    );
+    const querySnapshot = await getDocs(q);
+    const admins = [];
+    querySnapshot.forEach((doc) => {
+      admins.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    return { success: true, admins };
+  } catch (error) {
+    console.error("Erro ao listar admins por super admin:", error);
     return { success: false, error: error.message };
   }
 }

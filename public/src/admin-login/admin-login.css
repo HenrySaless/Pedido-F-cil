@@ -1,0 +1,516 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap");
+
+:root {
+  --primary: #e75a1a;
+  --secondary: #ff7a00;
+  --background: #fafafa;
+  --card-bg: #fff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4f4f4f;
+  --border-radius: 20px;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --input-bg: #f9f9f9;
+  --border-color: #e0e0e0;
+  --success: #28a745;
+  --error: #dc3545;
+  --warning: #ffc107;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  font-family: "Inter", "Poppins", sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Efeito de fundo animado */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+  animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(1deg);
+  }
+}
+
+.admin-login-container {
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 40px 30px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header do login */
+.login-header {
+  margin-bottom: 30px;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.logo-section h1 {
+  font-family: "Poppins", sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+}
+
+.login-header h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.login-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Formulário */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.input-group label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.input-group input {
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.input-group input:focus {
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(231, 90, 26, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Input de senha */
+.password-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input input {
+  padding-right: 50px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  color: var(--text-secondary);
+}
+
+.toggle-password:hover {
+  background: rgba(231, 90, 26, 0.1);
+  color: var(--primary);
+}
+
+/* Botão de login */
+.form-actions {
+  margin-top: 10px;
+}
+
+.login-btn {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(231, 90, 26, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.login-btn:hover::before {
+  left: 100%;
+}
+
+.login-btn:hover {
+  background: var(--secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(231, 90, 26, 0.3);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+}
+
+.login-btn:disabled {
+  background: var(--text-secondary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-btn:disabled:hover {
+  background: var(--text-secondary);
+  transform: none;
+  box-shadow: 0 4px 12px rgba(231, 90, 26, 0.2);
+}
+
+/* Footer */
+.login-footer {
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.back-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.back-link:hover {
+  color: var(--secondary);
+  transform: translateX(-5px);
+}
+
+.admin-note {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Estados de loading */
+.btn-loading {
+  display: none;
+}
+
+.login-btn.loading .btn-text {
+  display: none;
+}
+
+.login-btn.loading .btn-loading {
+  display: inline;
+}
+
+/* Mensagens de erro/sucesso */
+.message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.message.error {
+  background: rgba(220, 53, 69, 0.1);
+  color: var(--error);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.message.success {
+  background: rgba(40, 167, 69, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+
+  .login-card {
+    padding: 30px 20px;
+  }
+
+  .logo-section h1 {
+    font-size: 1.5rem;
+  }
+
+  .login-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .input-group input {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+
+  .login-btn {
+    padding: 14px 0;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-login-container {
+    max-width: 100%;
+  }
+
+  .login-card {
+    padding: 25px 15px;
+    border-radius: 16px;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .logo-section h1 {
+    font-size: 1.3rem;
+  }
+
+  .login-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .login-form {
+    gap: 16px;
+  }
+}
+
+/* Animações de entrada */
+.input-group {
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.input-group:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.input-group:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.form-actions {
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Melhorias de acessibilidade */
+.login-form input:focus,
+.toggle-password:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--input-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+/* Estilos para página de debug/teste */
+.debug-content {
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.debug-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--input-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.debug-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.debug-section p {
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.debug-section .success {
+  color: var(--success);
+  font-weight: 500;
+}
+
+.debug-section .error {
+  color: var(--error);
+  font-weight: 500;
+}
+
+.debug-section .warning {
+  color: var(--warning);
+  font-weight: 500;
+}
+
+.debug-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.debug-actions button,
+.debug-actions a {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.debug-actions .btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.debug-actions .btn-primary:hover {
+  background: var(--secondary);
+  transform: translateY(-1px);
+}
+
+.debug-actions .btn-secondary {
+  background: var(--text-secondary);
+  color: white;
+}
+
+.debug-actions .btn-secondary:hover {
+  background: #6c757d;
+  transform: translateY(-1px);
+}

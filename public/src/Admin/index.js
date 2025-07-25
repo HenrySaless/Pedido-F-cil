@@ -1,3 +1,9 @@
+import { auth } from "../firebase.js";
+import {
+  onAuthStateChanged,
+  signOut,
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { verificarAdmin } from "../services/firebaseService.js";
 import {
   listarProdutos,
   atualizarProduto,
@@ -5,6 +11,48 @@ import {
   listarPedidos,
   atualizarStatusPedido as atualizarStatusPedidoFirebase,
 } from "../services/firebaseService.js";
+
+// ===== PROTEÇÃO DO PAINEL ADMIN =====
+async function verificarAcessoAdmin() {
+  return new Promise((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      unsubscribe(); // Para de escutar mudanças de auth
+
+      if (!user) {
+        // Não está logado
+        alert("Acesso negado. Faça login como administrador.");
+        window.location.href = "../admin-login/admin-login.html";
+        return;
+      }
+
+      // Verifica se é admin
+      const adminCheck = await verificarAdmin(user.uid);
+
+      if (!adminCheck.success || !adminCheck.isAdmin) {
+        // Não é admin
+        await signOut(auth);
+        alert("Acesso negado. Apenas administradores podem acessar esta área.");
+        window.location.href = "../admin-login/admin-login.html";
+        return;
+      }
+
+      // É admin válido
+      resolve(user);
+    });
+  });
+}
+
+// Função para logout do admin
+async function logoutAdmin() {
+  try {
+    await signOut(auth);
+    localStorage.removeItem("isAdmin");
+    localStorage.removeItem("adminEmail");
+    window.location.href = "../admin-login/admin-login.html";
+  } catch (error) {
+    console.error("Erro ao fazer logout:", error);
+  }
+}
 
 // Função para renderizar pedidos simulados (mantida para compatibilidade)
 function renderPedidos() {
@@ -289,15 +337,27 @@ window.atualizarStatusPedido = async function (id) {
   }
 };
 
-document.addEventListener("DOMContentLoaded", function () {
-  // Remover renderPedidos() - agora usa renderPedidosUsuarios() que carrega dados reais
-  atualizarContadores();
-  renderEstoqueAdmin();
-  renderPedidosUsuarios();
-  // Botão para cadastro de novo produto
-  const btn = document.getElementById("novoProdutoBtn");
-  if (btn)
-    btn.onclick = function () {
-      window.location.href = "../novo-produto/index.html";
-    };
+document.addEventListener("DOMContentLoaded", async function () {
+  try {
+    // Verifica se é admin antes de carregar o painel
+    const adminUser = await verificarAcessoAdmin();
+    console.log("Admin logado:", adminUser.email);
+
+    // Header simplificado - sem botão de logout
+
+    // Carrega os dados do painel
+    atualizarContadores();
+    renderEstoqueAdmin();
+    renderPedidosUsuarios();
+
+    // Botão para cadastro de novo produto
+    const btn = document.getElementById("novoProdutoBtn");
+    if (btn)
+      btn.onclick = function () {
+        window.location.href = "../novo-produto/index.html";
+      };
+  } catch (error) {
+    console.error("Erro ao verificar acesso admin:", error);
+    window.location.href = "../admin-login/admin-login.html";
+  }
 });
