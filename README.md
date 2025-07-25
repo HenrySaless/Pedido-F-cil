@@ -1,2 +1,2 @@
-# Pedido-F-cil
+# Pedido-Fácil
 Site para aplicação prática
