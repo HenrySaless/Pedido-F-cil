@@ -1,5 +1,9 @@
 import { auth } from "../firebase.js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import {
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 const senhaInput = document.getElementById("senha");
 const toggleSenha = document.getElementById("toggleSenha");
@@ -20,9 +24,24 @@ form.addEventListener("submit", async function (e) {
   }
   try {
     await signInWithEmailAndPassword(auth, email, senha);
-    alert("Login realizado!");
-    // Redirecione para a home do usuário ou dashboard
-  } catch (err) {
-    alert("Erro: " + err.message);
+    window.location.href = "../cardápiol/cardapio.html";
+  } catch (error) {
+    alert("E-mail ou senha inválidos. Tente novamente.");
   }
 });
+
+// Google Auth
+const googleBtn = document.querySelector(".social-btn.google");
+if (googleBtn) {
+  googleBtn.addEventListener("click", async function () {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      window.location.href = "../cardápiol/cardapio.html";
+    } catch (error) {
+      alert(
+        "Erro ao entrar com Google: " + (error.message || "Tente novamente.")
+      );
+    }
+  });
+}

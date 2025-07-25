@@ -40,6 +40,7 @@ form.onsubmit = async function (e) {
     const cred = await createUserWithEmailAndPassword(auth, email, senha);
     await setDoc(doc(db, "usuarios", cred.user.uid), { nome, email });
     alert("Cadastro realizado com sucesso!");
+    window.location.href = "../cardápiol/cardapio.html";
     form.reset();
   } catch (err) {
     alert("Erro: " + err.message);
