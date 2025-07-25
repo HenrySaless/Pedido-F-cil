@@ -1,5 +1,36 @@
 import { listarProdutos, criarPedido } from "../services/firebaseService.js";
 
+// Verificar se usuário está logado
+function verificarLogin() {
+  const userId = localStorage.getItem("userId");
+  const userName = localStorage.getItem("userName");
+  const userLocation = localStorage.getItem("userLocation");
+
+  if (!userId) {
+    alert("Você precisa estar logado para acessar esta página.");
+    window.location.href = "../login/login.html";
+    return false;
+  }
+
+  // Atualizar informações do usuário na interface
+  const userNameElement = document.querySelector(".user-name");
+  const userLocationElement = document.querySelector(".user-location");
+
+  if (userNameElement) {
+    userNameElement.textContent = `Olá, ${userName || "Usuário"}`;
+  }
+
+  if (userLocationElement) {
+    if (userLocation) {
+      userLocationElement.innerHTML = `<i data-lucide="map-pin"></i> ${userLocation}`;
+    } else {
+      userLocationElement.innerHTML = `<i data-lucide="map-pin"></i> Endereço não informado`;
+    }
+  }
+
+  return true;
+}
+
 // Produtos
 let produtos = [];
 
@@ -83,8 +114,85 @@ async function carregarProdutos() {
   }
 }
 
-// Carregar produtos na inicialização
-carregarProdutos();
+// Inicialização
+document.addEventListener("DOMContentLoaded", function () {
+  // Verificar login primeiro
+  if (!verificarLogin()) {
+    return;
+  }
+
+  // Carregar produtos
+  carregarProdutos();
+
+  // Configurar drawer
+  const menuBtn = document.getElementById("menuBtn");
+  const drawerOverlay = document.getElementById("drawerOverlay");
+  const drawerMenu = document.getElementById("drawerMenu");
+  const drawerCloseBtn = document.getElementById("drawerCloseBtn");
+
+  if (menuBtn) menuBtn.addEventListener("click", openDrawer);
+  if (drawerOverlay) drawerOverlay.addEventListener("click", closeDrawer);
+  if (drawerCloseBtn) drawerCloseBtn.addEventListener("click", closeDrawer);
+
+  // Configurar navegação do drawer
+  const drawerHome = document.getElementById("drawerHome");
+  const drawerPedidos = document.getElementById("drawerPedidos");
+  const drawerEnderecos = document.getElementById("drawerEnderecos");
+  const drawerConfig = document.getElementById("drawerConfig");
+
+  if (drawerHome)
+    drawerHome.addEventListener(
+      "click",
+      () => (window.location.href = "cardapio.html")
+    );
+  if (drawerPedidos)
+    drawerPedidos.addEventListener(
+      "click",
+      () => (window.location.href = "meus-pedidos.html")
+    );
+  if (drawerEnderecos)
+    drawerEnderecos.addEventListener("click", () =>
+      alert("Funcionalidade em desenvolvimento")
+    );
+  if (drawerConfig)
+    drawerConfig.addEventListener("click", () =>
+      alert("Funcionalidade em desenvolvimento")
+    );
+
+  // Logout
+  const drawerLogout = document.getElementById("drawerLogout");
+  if (drawerLogout) {
+    drawerLogout.addEventListener("click", () => {
+      if (confirm("Deseja realmente sair?")) {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userLocation");
+        window.location.href = "../index.html";
+      }
+    });
+  }
+
+  // Configurar busca
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    searchInput.addEventListener("input", renderProdutos);
+  }
+
+  // Configurar filtros
+  const filterTabs = document.querySelectorAll(".filter-tab");
+  filterTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      filterTabs.forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      categoriaAtual = tab.dataset.category;
+      renderProdutos();
+    });
+  });
+
+  // Renderizar produtos iniciais
+  renderProdutos();
+});
 
 let categoriaAtual = "todos";
 
@@ -139,8 +247,8 @@ function adicionarProduto(nome) {
   alert(`Produto adicionado! (${nome})`);
 }
 
-// Função para adicionar produto ao carrinho (localStorage temporário)
-function adicionarProdutoQtd(nome, id) {
+// Função para adicionar produto ao carrinho
+async function adicionarProdutoQtd(nome, id) {
   const input = document.getElementById("qtd-" + id);
   const qtd = parseInt(input.value, 10);
   const max = parseInt(input.max, 10);
@@ -194,6 +302,17 @@ window.adicionarProdutoQtdERedirecionar = async function (nome, id) {
   const produto = produtos.find((p) => p.id === id);
   if (!produto) return;
 
+  // Obter informações do usuário logado
+  const userId = localStorage.getItem("userId");
+  const userName = localStorage.getItem("userName");
+  const userLocation = localStorage.getItem("userLocation");
+
+  if (!userId) {
+    alert("Você precisa estar logado para fazer pedidos.");
+    window.location.href = "../login/login.html";
+    return;
+  }
+
   // Criar pedido no Firebase
   try {
     const pedidoData = {
@@ -204,8 +323,12 @@ window.adicionarProdutoQtdERedirecionar = async function (nome, id) {
       qtd: qtd,
       loja: produto.loja || "",
       categoria: produto.categoria,
-      userId: "usuario_anonimo", // TODO: Usar ID do usuário logado
+      userId: userId,
+      userName: userName,
+      userLocation: userLocation,
       total: produto.preco * qtd,
+      status: "pendente",
+      data: new Date().toISOString(),
     };
 
     const result = await criarPedido(pedidoData);

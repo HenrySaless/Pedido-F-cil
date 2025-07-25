@@ -258,16 +258,17 @@ async function renderPedidosUsuarios() {
       card.className = "order-card";
       card.innerHTML = `
         <div class="order-header">
-          <span class="order-client">${pedido.nome}</span>
+          <span class="order-client">${pedido.userName || pedido.nome}</span>
           <span class="order-status ${pedido.status || "pendente"}">${
         (pedido.status || "pendente").charAt(0).toUpperCase() +
         (pedido.status || "pendente").slice(1)
       }</span>
         </div>
         <div class="order-items">${pedido.qtd}x ${pedido.nome}</div>
-        <div class="order-meta">Preço: R$ ${(pedido.preco * pedido.qtd)
-          .toFixed(2)
-          .replace(".", ",")}</div>
+        <div class="order-meta">
+          Preço: R$ ${(pedido.preco * pedido.qtd).toFixed(2).replace(".", ",")}
+          ${pedido.userLocation ? `<br>📍 ${pedido.userLocation}` : ""}
+        </div>
         <div class="order-actions">
           <button class="btn-primary" onclick="verDetalhesPedido('${
             pedido.id
@@ -293,15 +294,19 @@ window.verDetalhesPedido = async function (id) {
     if (result.success) {
       const pedido = result.pedidos.find((p) => p.id === id);
       if (pedido) {
-        alert(
-          `Detalhes do pedido:\nProduto: ${pedido.nome}\nQuantidade: ${
-            pedido.qtd
-          }\nPreço unitário: R$ ${pedido.preco.toFixed(2)}\nPreço total: R$ ${(
-            pedido.preco * pedido.qtd
-          ).toFixed(2)}\nCategoria: ${
-            pedido.categoria || "Não definida"
-          }\nStatus: ${pedido.status}`
-        );
+        const detalhes = [
+          `Cliente: ${pedido.userName || "Não informado"}`,
+          `Produto: ${pedido.nome}`,
+          `Quantidade: ${pedido.qtd}`,
+          `Preço unitário: R$ ${pedido.preco.toFixed(2)}`,
+          `Preço total: R$ ${(pedido.preco * pedido.qtd).toFixed(2)}`,
+          `Categoria: ${pedido.categoria || "Não definida"}`,
+          `Status: ${pedido.status}`,
+          `Endereço: ${pedido.userLocation || "Não informado"}`,
+          `Data: ${new Date(pedido.data).toLocaleString("pt-BR")}`,
+        ].join("\n");
+
+        alert(`Detalhes do pedido:\n${detalhes}`);
       }
     }
   } catch (error) {

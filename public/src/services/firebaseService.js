@@ -277,6 +277,55 @@ export async function listarAdmins() {
   }
 }
 
+// ===== SERVIÇOS DE USUÁRIOS =====
+
+// Criar usuário
+export async function criarUsuario(userData) {
+  try {
+    const docRef = doc(db, "usuarios", userData.uid);
+    await setDoc(docRef, {
+      ...userData,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true, id: userData.uid };
+  } catch (error) {
+    console.error("Erro ao criar usuário:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Buscar usuário por ID
+export async function buscarUsuario(userId) {
+  try {
+    const docRef = doc(db, "usuarios", userId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { success: true, usuario: { id: docSnap.id, ...docSnap.data() } };
+    } else {
+      return { success: false, error: "Usuário não encontrado" };
+    }
+  } catch (error) {
+    console.error("Erro ao buscar usuário:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Atualizar usuário
+export async function atualizarUsuario(userId, userData) {
+  try {
+    const docRef = doc(db, "usuarios", userId);
+    await updateDoc(docRef, {
+      ...userData,
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao atualizar usuário:", error);
+    return { success: false, error: error.message };
+  }
+}
+
 // ===== SERVIÇOS DE SUPER ADMIN =====
 
 // Verificar se usuário é super admin

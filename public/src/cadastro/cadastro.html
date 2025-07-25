@@ -82,6 +82,41 @@
           </button>
         </div>
 
+        <div class="endereco-section">
+          <label class="auth-label">Endereço</label>
+          <div class="endereco-options">
+            <button type="button" class="endereco-btn" id="btnUsarLocalizacao">
+              📍 Usar minha localização
+            </button>
+            <button type="button" class="endereco-btn" id="btnDigitarEndereco">
+              ✏️ Digitar endereço
+            </button>
+          </div>
+          <div
+            class="endereco-input-container"
+            id="enderecoContainer"
+            style="display: none"
+          >
+            <input
+              type="text"
+              id="endereco"
+              class="auth-input"
+              placeholder="Digite seu endereço completo"
+            />
+            <small class="endereco-info"
+              >Rua, número, bairro, cidade - CEP</small
+            >
+          </div>
+          <div
+            class="localizacao-info"
+            id="localizacaoInfo"
+            style="display: none"
+          >
+            <span class="localizacao-text">📍 Localização detectada</span>
+            <span class="localizacao-coords" id="coordsText"></span>
+          </div>
+        </div>
+
         <div class="auth-checkbox-row">
           <input type="checkbox" id="termos" class="auth-checkbox" required />
           <label for="termos" class="checkbox-label"

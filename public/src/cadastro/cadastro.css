@@ -137,6 +137,80 @@ body {
   color: var(--primary);
   text-decoration: underline;
 }
+
+/* Seção de endereço */
+.endereco-section {
+  margin-bottom: 20px;
+}
+
+.endereco-options {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.endereco-btn {
+  background: var(--input-background);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  flex: 1;
+  min-width: 140px;
+}
+
+.endereco-btn:hover {
+  border-color: var(--primary);
+  background: rgba(231, 90, 26, 0.1);
+  transform: translateY(-1px);
+}
+
+.endereco-btn.active {
+  border-color: var(--primary);
+  color: white;
+  background: var(--primary);
+  box-shadow: 0 4px 12px rgba(231, 90, 26, 0.3);
+}
+
+.endereco-input-container {
+  margin-top: 12px;
+}
+
+.endereco-info {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.localizacao-info {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.localizacao-text {
+  color: #2e7d32;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.localizacao-coords {
+  color: #4caf50;
+  font-size: 0.8rem;
+  font-family: monospace;
+}
 .auth-btn-primary {
   width: 100%;
   background: var(--button-background);
