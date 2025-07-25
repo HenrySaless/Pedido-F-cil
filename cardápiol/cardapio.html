@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cardápio - PedidoFácil</title>
+    <link rel="stylesheet" href="cardapio.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <span class="logo-placeholder">
+          <img src="../imgs/logo.png" alt="" width="44px" height="44px" />
+        </span>
+        <span class="app-name">PedidoFácil</span>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" id="menuBtn" aria-label="Menu">
+          <i data-lucide="menu"></i>
+        </button>
+        <span class="user-name">Olá, João!</span>
+        <span class="user-location"
+          ><i data-lucide="map-pin"></i> Centro, SP</span
+        >
+      </div>
+    </header>
+
+    <!-- Busca -->
+    <section class="search-section">
+      <div class="search-box">
+        <i data-lucide="search"></i>
+        <input
+          type="text"
+          placeholder="Buscar no cardápio..."
+          id="searchInput"
+        />
+        <button class="icon-btn filter-btn" id="filterBtn" aria-label="Filtrar">
+          <i data-lucide="sliders-horizontal"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- Banner Promocional -->
+    <section class="promo-banner">
+      <img
+        src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80"
+        alt="Promoção"
+        class="promo-img"
+      />
+      <div class="promo-info">
+        <span class="promo-text">Compre 1, leve 2!</span>
+        <button class="promo-btn">Aproveitar</button>
+      </div>
+    </section>
+
+    <!-- Filtros -->
+    <nav class="category-filters" id="categoryFilters">
+      <button class="filter-tab active" data-category="todos">Todos</button>
+      <button class="filter-tab" data-category="hamburguer">Hamburguer</button>
+      <button class="filter-tab" data-category="bebidas">Bebidas</button>
+      <button class="filter-tab" data-category="sobremesas">Sobremesas</button>
+      <button class="filter-tab" data-category="lanches">Lanches</button>
+    </nav>
+
+    <!-- Lista de Produtos -->
+    <main class="products-list" id="productsList">
+      <!-- Produtos serão inseridos via JS -->
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer-nav">
+      <button class="footer-btn active" type="button">
+        <span>🏠</span><small>Home</small>
+      </button>
+      <button class="footer-btn" type="button" id="btnMeusPedidos">
+        <span>📦</span><small>Meus pedidos</small>
+      </button>
+      <button class="footer-btn" type="button">
+        <span>📍</span><small>Endereços</small>
+      </button>
+      <button class="footer-btn" type="button">
+        <span>⚙️</span><small>Config</small>
+      </button>
+    </footer>
+
+    <script src="cardapio.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.lucide) lucide.createIcons();
+      });
+    </script>
+    <script>
+      document.getElementById("btnMeusPedidos").onclick = function () {
+        window.location.href = "meus-pedidos.html";
+      };
+    </script>
+  </body>
+</html>

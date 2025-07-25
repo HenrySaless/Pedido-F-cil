@@ -1,0 +1,117 @@
+{
+  "designSystem": {
+    "branding": {
+      "logoStyle": "minimal, abstract, single-color",
+      "brandingPosition": "centered top",
+      "animation": "none"
+    },
+    "colors": {
+      "backgroundLight": "#F9F9F9",
+      "backgroundDark": "#000000",
+      "primary": "#000000",
+      "accent": "#7C3AED",
+      "textPrimary": "#000000",
+      "textSecondary": "#666666",
+      "inputBackground": "#F1F1F1",
+      "buttonBackground": "#000000",
+      "buttonText": "#FFFFFF",
+      "dividerColor": "#CCCCCC"
+    },
+    "typography": {
+      "fontFamily": "'Inter', sans-serif",
+      "headlineWeight": "700",
+      "bodyWeight": "400",
+      "fontSizes": {
+        "h1": "24px",
+        "h2": "20px",
+        "body": "16px",
+        "small": "14px"
+      },
+      "textAlign": "center"
+    },
+    "spacing": {
+      "padding": "16px",
+      "margin": "16px",
+      "gap": "12px",
+      "borderRadius": "12px"
+    },
+    "layout": {
+      "type": "single-column",
+      "alignment": "center",
+      "maxWidth": "400px",
+      "safeAreaInsets": true
+    },
+    "components": {
+      "inputField": {
+        "border": "none",
+        "background": "#EFEFEF",
+        "padding": "12px 16px",
+        "borderRadius": "12px",
+        "fontSize": "16px"
+      },
+      "button": {
+        "primary": {
+          "background": "#000000",
+          "color": "#FFFFFF",
+          "padding": "14px 24px",
+          "borderRadius": "12px",
+          "fontWeight": "600"
+        },
+        "secondary": {
+          "background": "#FFFFFF",
+          "border": "1px solid #CCCCCC",
+          "color": "#000000"
+        }
+      },
+      "authDivider": {
+        "text": "or",
+        "lineColor": "#DADADA"
+      },
+      "socialButtons": {
+        "google": {
+          "background": "#FFFFFF",
+          "border": "1px solid #DADADA",
+          "icon": "google",
+          "textColor": "#000000"
+        },
+        "apple": {
+          "background": "#FFFFFF",
+          "border": "1px solid #DADADA",
+          "icon": "apple",
+          "textColor": "#000000"
+        }
+      },
+      "checkbox": {
+        "style": "rounded",
+        "labelSize": "14px"
+      },
+      "iconButtons": {
+        "rightArrow": {
+          "size": "44px",
+          "background": "#FFFFFF",
+          "iconColor": "#000000"
+        },
+        "eyeToggle": {
+          "position": "absolute right",
+          "color": "#666666"
+        }
+      }
+    },
+    "animations": {
+      "transitions": {
+        "default": "all 0.3s ease-in-out"
+      },
+      "pageTransition": "fade"
+    },
+    "accessibility": {
+      "fontScale": true,
+      "highContrastSupport": true
+    },
+    "platformGuidelines": {
+      "mobile": true,
+      "desktop": true,
+      "adaptive": true,
+      "darkMode": true
+    }
+  }
+}

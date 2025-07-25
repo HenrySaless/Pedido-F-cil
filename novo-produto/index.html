@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastrar Produto - PedidoFácil</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="cadastro-container">
+      <h1 class="cadastro-title">Cadastrar Novo Produto</h1>
+      <form class="cadastro-form" id="produtoForm" autocomplete="off">
+        <div class="img-upload-area" id="imgUploadArea">
+          <input type="file" id="imgInput" accept="image/*" hidden />
+          <div class="img-preview" id="imgPreview">
+            Arraste ou clique para escolher uma imagem
+          </div>
+          <button type="button" class="img-btn" id="imgBtn">
+            Escolher Imagem
+          </button>
+        </div>
+        <label
+          >Nome do Produto
+          <input type="text" id="nome" required maxlength="40" />
+        </label>
+        <label
+          >Descrição Curta
+          <textarea id="descricao" maxlength="80"></textarea>
+        </label>
+        <label
+          >Quantidade Inicial
+          <input type="number" id="quantidade" min="1" required />
+        </label>
+        <label
+          >Preço (R$)
+          <input type="number" id="preco" step="any" required />
+        </label>
+        <div class="tempo-entrega-group">
+          <span>Tempo de Entrega:</span>
+          <div class="tempo-btns horizontal">
+            <button type="button" class="tempo-btn" data-value="10-15min">
+              10min
+            </button>
+            <button type="button" class="tempo-btn" data-value="20min">
+              20min
+            </button>
+            <button type="button" class="tempo-btn" data-value="30min">
+              30min
+            </button>
+          </div>
+        </div>
+        <label
+          >Categoria
+          <select id="categoria" required>
+            <option value="">Selecione</option>
+            <option value="hamburguer">Hambúrguer</option>
+            <option value="bebidas">Bebida</option>
+            <option value="pizza">Pizza</option>
+            <option value="sobremesa">Sobremesa</option>
+            <option value="lanches">Lanches</option>
+          </select>
+        </label>
+        <div class="tags-group">
+          <span>Ofertas:</span>
+          <div class="tags-btns espaçado">
+            <button type="button" class="tag-btn" data-value="Delivery">
+              Delivery
+            </button>
+            <button type="button" class="tag-btn" data-value="Pick Up">
+              Pick Up
+            </button>
+            <button type="button" class="tag-btn" data-value="Offer">
+              Offer
+            </button>
+            <button
+              type="button"
+              class="tag-btn"
+              data-value="Online payment available"
+            >
+              Online payment available
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="cadastrar-btn">Cadastrar Produto</button>
+      </form>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

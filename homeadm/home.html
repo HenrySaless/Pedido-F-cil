@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel Admin - PedidoFácil</title>
+    <link rel="stylesheet" href="css.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="../produtos.js"></script>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <img src="../imgs/logo.png" alt="Mascote" class="logo-mascot" />
+        <span class="platform-name">Pedido Fácil Admin</span>
+      </div>
+      <!-- <div class="header-right">
+        <button
+          class="icon-btn"
+          id="menuBtn"
+          aria-label="Perfil do administrador"
+        >
+          <span class="icon-emoji">👤</span>
+        </button>
+      </div> -->
+    </header>
+
+    <main class="main-content">
+      <!-- Resumo do Dia -->
+      <section class="summary-section">
+        <div class="summary-card" id="totalPedidos">
+          <span class="summary-icon">📦</span>
+          <div class="summary-info">
+            <span class="summary-number" id="totalPedidosNum">120</span>
+            <span class="summary-label">Total de Pedidos</span>
+          </div>
+        </div>
+        <div class="summary-card" id="pendentes">
+          <span class="summary-icon">⏳</span>
+          <div class="summary-info">
+            <span class="summary-number" id="pendentesNum">8</span>
+            <span class="summary-label">Pendentes</span>
+          </div>
+        </div>
+        <div class="summary-card" id="entregues">
+          <span class="summary-icon">✅</span>
+          <div class="summary-info">
+            <span class="summary-number" id="entreguesNum">110</span>
+            <span class="summary-label">Entregues</span>
+          </div>
+        </div>
+        <div class="summary-card" id="receita">
+          <span class="summary-icon">💰</span>
+          <div class="summary-info">
+            <span class="summary-number" id="receitaNum">R$ 2.350,00</span>
+            <span class="summary-label">Receita do Dia</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pedidos Recentes -->
+      <section class="orders-section">
+        <h2 class="section-title">Produtos em Estoque</h2>
+        <div class="orders-list" id="estoqueList">
+          <!-- Produtos renderizados via JS -->
+        </div>
+        <button
+          class="btn-primary"
+          id="novoProdutoBtn"
+          style="margin-top: 24px"
+          type="button"
+        >
+          Cadastrar Novo Produto
+        </button>
+      </section>
+
+      <!-- Ações rápidas -->
+      <aside class="quick-actions">
+        <button class="btn-primary" id="novoPedidoBtn">➕ Novo Pedido</button>
+        <button class="btn-primary" id="editarCardapioBtn">
+          🍔 Editar Cardápio
+        </button>
+        <button class="btn-primary" id="configuracoesBtn">
+          ⚙️ Configurações
+        </button>
+      </aside>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+      <span>&copy; 2024 PedidoFácil Admin</span>
+    </footer>
+
+    <script src="index.js"></script>
+    <script>
+      document.getElementById("novoProdutoBtn").onclick = function () {
+        window.location.href = "../novo-produto/index.html";
+      };
+    </script>
+  </body>
+</html>

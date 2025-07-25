@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meus Pedidos - PedidoFácil</title>
+    <link rel="stylesheet" href="meus-pedidos.css" />
+    <link rel="stylesheet" href="cardapio.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-left">
+        <span class="logo-placeholder"
+          ><img src="../imgs/logo.png" alt="" width="44px" height="44px"
+        /></span>
+        <span class="app-name">PedidoFácil</span>
+      </div>
+      <div class="header-right">
+        <button
+          class="icon-btn"
+          onclick="window.location.href='cardapio.html'"
+          aria-label="Voltar"
+        >
+          <span style="font-size: 1.3rem">←</span>
+        </button>
+        <span class="user-name">Olá, João!</span>
+      </div>
+    </header>
+    <main class="meus-pedidos-container">
+      <h1 class="meus-pedidos-title">Meus Pedidos</h1>
+      <div id="pedidosList"></div>
+      <div class="meus-pedidos-total" id="totalPedidos"></div>
+      <button
+        class="btn-primary"
+        id="limparPedidosBtn"
+        style="margin-top: 24px"
+      >
+        Limpar Pedidos
+      </button>
+    </main>
+    <footer class="footer-nav">
+      <button class="footer-btn" onclick="window.location.href='cardapio.html'">
+        <span>🏠</span><small>Home</small>
+      </button>
+      <button class="footer-btn active">
+        <span>📦</span><small>Meus pedidos</small>
+      </button>
+      <button class="footer-btn">
+        <span>📍</span><small>Endereços</small>
+      </button>
+      <button class="footer-btn"><span>⚙️</span><small>Config</small></button>
+    </footer>
+    <script src="meus-pedidos.js"></script>
+  </body>
+</html>

@@ -1,0 +1,106 @@
+{
+  "designSystem": {
+    "theme": "Warm Minimalist UI",
+    "colors": {
+      "primary": "#E75A1A", // Laranja quente para fundo e destaques
+      "secondary": "#FF7A00", // Laranja mais vibrante para botões
+      "background": "#FFFFFF", // Fundo dos cards e app
+      "textPrimary": "#1A1A1A", // Título e texto escuro
+      "textSecondary": "#4F4F4F", // Texto explicativo
+      "cardBorder": "#E0E0E0", // Bordas dos cards e campos
+      "buttonBorder": "#DDDDDD" // Contorno dos botões redondos
+    },
+    "typography": {
+      "fontFamily": "'Inter', sans-serif",
+      "headingLarge": {
+        "fontSize": "28px",
+        "fontWeight": "700"
+      },
+      "headingMedium": {
+        "fontSize": "20px",
+        "fontWeight": "600"
+      },
+      "paragraph": {
+        "fontSize": "16px",
+        "fontWeight": "400"
+      },
+      "smallText": {
+        "fontSize": "14px",
+        "fontWeight": "400"
+      }
+    },
+    "layout": {
+      "spacingUnit": "16px",
+      "sectionSpacing": "64px",
+      "containerPadding": "24px",
+      "cardPadding": "16px",
+      "borderRadius": "16px",
+      "cardRadius": "24px",
+      "formFieldRadius": "12px"
+    },
+    "components": {
+      "stepIndicator": {
+        "type": "vertical",
+        "circleSize": "32px",
+        "lineStyle": "dotted",
+        "numberColor": "#FFFFFF",
+        "circleBorder": "2px solid #FFFFFF",
+        "stepBackground": "#E75A1A",
+        "textColor": "#FFFFFF"
+      },
+      "orderCard": {
+        "background": "#FFFFFF",
+        "borderRadius": "24px",
+        "shadow": "none",
+        "border": "1px solid #F0F0F0"
+      },
+      "orderItem": {
+        "image": "emoji or icon",
+        "titleStyle": "headingMedium",
+        "quantityControl": {
+          "buttonShape": "circle",
+          "buttonSize": "36px",
+          "border": "1px solid #DDDDDD",
+          "iconColor": "#E75A1A"
+        }
+      },
+      "sectionTitle": {
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "marginBottom": "16px"
+      },
+      "formField": {
+        "background": "#FFFFFF",
+        "border": "1px solid #E0E0E0",
+        "borderRadius": "12px",
+        "padding": "12px 16px"
+      }
+    },
+    "buttons": {
+      "primary": {
+        "background": "#FF7A00",
+        "color": "#FFFFFF",
+        "borderRadius": "999px",
+        "padding": "12px 24px",
+        "hover": {
+          "background": "#e56600"
+        }
+      },
+      "roundIcon": {
+        "shape": "circle",
+        "size": "36px",
+        "border": "1px solid #DDDDDD",
+        "iconColor": "#E75A1A",
+        "background": "#FFFFFF"
+      }
+    },
+    "icons": {
+      "style": "emoji-based or flat icons",
+      "size": "24px"
+    },
+    "animations": {
+      "buttonClick": "scale-down + shadow fade",
+      "stepTransition": "slide-up on scroll"
+    }
+  }
+}
