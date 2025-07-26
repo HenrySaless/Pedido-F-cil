@@ -428,6 +428,42 @@ body {
   transform: translateY(-1px);
 }
 
+.btn-success {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: var(--form-radius);
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.btn-success:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.btn-warning {
+  background: #ffc107;
+  color: #212529;
+  border: none;
+  border-radius: var(--form-radius);
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
+}
+
+.btn-warning:hover {
+  background: #e0a800;
+  transform: translateY(-1px);
+}
+
 .btn-warning {
   background: #ffc107;
   color: #212529;

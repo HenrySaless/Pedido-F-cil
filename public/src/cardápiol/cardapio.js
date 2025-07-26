@@ -417,8 +417,11 @@ async function renderProdutos() {
   }
 
   produtosUnicos.forEach((produto) => {
+    const estoqueDisponivel = produto.maxQtd || 0;
+    const temEstoque = estoqueDisponivel > 0;
+
     const card = document.createElement("div");
-    card.className = "product-card";
+    card.className = `product-card ${!temEstoque ? "sem-estoque" : ""}`;
     card.innerHTML = `
       <img src="${produto.img}" alt="${produto.nome}" class="product-img" />
       <div class="product-info">
@@ -427,17 +430,29 @@ async function renderProdutos() {
         <div class="product-price">R$ ${produto.preco
           .toFixed(2)
           .replace(".", ",")}</div>
+        <div class="estoque-info ${!temEstoque ? "sem-estoque" : ""}">
+          ${temEstoque ? `Estoque: ${estoqueDisponivel}` : "Fora de estoque"}
+        </div>
       </div>
       <div class="product-actions">
-        <input type="number" min="1" max="${
-          produto.maxQtd
-        }" value="1" class="qtd-input" id="qtd-${
-      produto.id
-    }" aria-label="Quantidade">
-        <span class="max-qtd">Máx: ${produto.maxQtd}</span>
-        <button class="add-btn" title="Adicionar ao carrinho" onclick="adicionarProdutoQtdERedirecionar('${
-          produto.nome
-        }', '${produto.id}')">Carrinho</button>
+        <input type="number" min="1" max="${estoqueDisponivel}" value="1" 
+               class="qtd-input" id="qtd-${produto.id}" 
+               aria-label="Quantidade" ${!temEstoque ? "disabled" : ""}>
+        <span class="max-qtd">Máx: ${estoqueDisponivel}</span>
+        <button class="add-btn ${!temEstoque ? "disabled" : ""}" 
+                title="${
+                  temEstoque
+                    ? "Adicionar ao carrinho"
+                    : "Produto fora de estoque"
+                }" 
+                onclick="${
+                  temEstoque
+                    ? `adicionarProdutoQtdERedirecionar('${produto.nome}', '${produto.id}')`
+                    : ""
+                }"
+                ${!temEstoque ? "disabled" : ""}>
+          ${temEstoque ? "Carrinho" : "Indisponível"}
+        </button>
       </div>
     `;
     lista.appendChild(card);

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demonstração do Sistema de Estoque - PedidoFácil</title>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .demo-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin: 20px 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .demo-title {
+        color: #e75a1a;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      .demo-section {
+        margin: 16px 0;
+      }
+      .demo-section h3 {
+        color: #333;
+        margin-bottom: 8px;
+      }
+      .demo-section p {
+        color: #666;
+        line-height: 1.6;
+      }
+      .feature-list {
+        list-style: none;
+        padding: 0;
+      }
+      .feature-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+      }
+      .feature-list li:before {
+        content: "✅ ";
+        margin-right: 8px;
+      }
+      .code-example {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 16px;
+        margin: 12px 0;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+      }
+      .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        margin: 0 4px;
+      }
+      .status-pendente {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .status-entregue {
+        background: #d4edda;
+        color: #155724;
+      }
+      .status-cancelado {
+        background: #f8d7da;
+        color: #721c24;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-card">
+      <h1 class="demo-title">🎯 Sistema de Controle de Estoque</h1>
+      <p>
+        Demonstração do sistema implementado para controlar o estoque de
+        produtos em tempo real.
+      </p>
+    </div>
+
+    <div class="demo-card">
+      <h2 class="demo-title">📋 Funcionalidades Implementadas</h2>
+
+      <div class="demo-section">
+        <h3>🛒 Controle de Estoque em Tempo Real</h3>
+        <ul class="feature-list">
+          <li>
+            Verificação automática de estoque disponível antes de criar pedidos
+          </li>
+          <li>
+            Atualização automática do estoque quando pedidos são realizados
+          </li>
+          <li>
+            Restauração do estoque quando pedidos são cancelados ou rejeitados
+          </li>
+          <li>Interface visual que mostra produtos fora de estoque</li>
+          <li>Limitação da quantidade máxima baseada no estoque disponível</li>
+        </ul>
+      </div>
+
+      <div class="demo-section">
+        <h3>🎨 Interface do Cliente</h3>
+        <ul class="feature-list">
+          <li>
+            Produtos sem estoque aparecem com visual diferenciado (escala de
+            cinza)
+          </li>
+          <li>Botão "Carrinho" desabilitado para produtos fora de estoque</li>
+          <li>Indicador visual do estoque disponível em cada produto</li>
+          <li>
+            Mensagem de erro quando tenta pedir mais que o estoque disponível
+          </li>
+        </ul>
+      </div>
+
+      <div class="demo-section">
+        <h3>⚙️ Painel Administrativo</h3>
+        <ul class="feature-list">
+          <li>Visualização do estoque atual de todos os produtos</li>
+          <li>Edição manual do estoque diretamente na interface</li>
+          <li>Botões para entregar ou cancelar pedidos</li>
+          <li>Restauração automática do estoque ao cancelar pedidos</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <h2 class="demo-title">🔄 Fluxo de Funcionamento</h2>
+
+      <div class="demo-section">
+        <h3>1. Cliente faz pedido</h3>
+        <p>Quando um cliente seleciona um produto e faz um pedido:</p>
+        <div class="code-example">
+          // Verifica se há estoque suficiente if (quantidadeSolicitada >
+          estoqueAtual) { return { success: false, error: "Estoque insuficiente"
+          }; } // Cria o pedido await addDoc(collection(db, "pedidos"),
+          pedidoData); // Atualiza o estoque const novoEstoque = estoqueAtual -
+          quantidadeSolicitada; await updateDoc(doc(db, "produtos", produtoId),
+          { maxQtd: novoEstoque });
+        </div>
+      </div>
+
+      <div class="demo-section">
+        <h3>2. Admin gerencia pedidos</h3>
+        <p>O administrador pode:</p>
+        <ul class="feature-list">
+          <li>
+            Marcar pedido como
+            <span class="status-badge status-entregue">Entregue</span> (estoque
+            permanece reduzido)
+          </li>
+          <li>
+            Marcar pedido como
+            <span class="status-badge status-cancelado">Cancelado</span>
+            (estoque é restaurado)
+          </li>
+          <li>Editar manualmente o estoque de qualquer produto</li>
+        </ul>
+      </div>
+
+      <div class="demo-section">
+        <h3>3. Restauração automática do estoque</h3>
+        <p>Quando um pedido é cancelado:</p>
+        <div class="code-example">
+          // Se o status for cancelado, restaurar o estoque if (novoStatus ===
+          "cancelado") { const pedidoData = pedidoDoc.data(); const estoqueAtual
+          = produto.maxQtd || 0; const quantidadeRestaurar = pedidoData.qtd ||
+          0; const novoEstoque = estoqueAtual + quantidadeRestaurar; await
+          updateDoc(doc(db, "produtos", produtoId), { maxQtd: novoEstoque }); }
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <h2 class="demo-title">📊 Exemplo Prático</h2>
+
+      <div class="demo-section">
+        <h3>Cenário: Coxinhas</h3>
+        <p><strong>Estoque inicial:</strong> 20 coxinhas</p>
+
+        <div
+          style="
+            margin: 16px 0;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+          "
+        >
+          <p><strong>Cliente A:</strong> Pede 15 coxinhas</p>
+          <p>✅ Pedido criado com sucesso</p>
+          <p><strong>Estoque restante:</strong> 5 coxinhas</p>
+        </div>
+
+        <div
+          style="
+            margin: 16px 0;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+          "
+        >
+          <p><strong>Cliente B:</strong> Tenta pedir 10 coxinhas</p>
+          <p>❌ Erro: "Estoque insuficiente. Disponível: 5, Solicitado: 10"</p>
+          <p><strong>Estoque restante:</strong> 5 coxinhas</p>
+        </div>
+
+        <div
+          style="
+            margin: 16px 0;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+          "
+        >
+          <p><strong>Cliente C:</strong> Pede 3 coxinhas</p>
+          <p>✅ Pedido criado com sucesso</p>
+          <p><strong>Estoque restante:</strong> 2 coxinhas</p>
+        </div>
+
+        <div
+          style="
+            margin: 16px 0;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+          "
+        >
+          <p><strong>Admin cancela pedido do Cliente A:</strong></p>
+          <p>✅ Estoque restaurado: 2 + 15 = 17 coxinhas</p>
+          <p><strong>Estoque final:</strong> 17 coxinhas</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <h2 class="demo-title">🔧 Arquivos Modificados</h2>
+
+      <div class="demo-section">
+        <h3>Backend (Firebase Service)</h3>
+        <ul class="feature-list">
+          <li>
+            <code>firebaseService.js</code> - Função criarPedido com verificação
+            de estoque
+          </li>
+          <li>
+            <code>firebaseService.js</code> - Função atualizarStatusPedido com
+            restauração de estoque
+          </li>
+        </ul>
+      </div>
+
+      <div class="demo-section">
+        <h3>Frontend Cliente</h3>
+        <ul class="feature-list">
+          <li>
+            <code>cardapio.js</code> - Renderização com indicadores de estoque
+          </li>
+          <li><code>cardapio.css</code> - Estilos para produtos sem estoque</li>
+        </ul>
+      </div>
+
+      <div class="demo-section">
+        <h3>Painel Admin</h3>
+        <ul class="feature-list">
+          <li>
+            <code>Admin/index.js</code> - Botões para entregar/cancelar pedidos
+          </li>
+          <li><code>Admin/css.css</code> - Estilos para novos botões</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <h2 class="demo-title">✅ Benefícios do Sistema</h2>
+
+      <ul class="feature-list">
+        <li>
+          <strong>Prevenção de vendas sem estoque:</strong> Evita pedidos de
+          produtos indisponíveis
+        </li>
+        <li>
+          <strong>Transparência:</strong> Clientes veem o estoque disponível em
+          tempo real
+        </li>
+        <li>
+          <strong>Flexibilidade:</strong> Admins podem cancelar pedidos e
+          restaurar estoque
+        </li>
+        <li>
+          <strong>Automação:</strong> Controle automático sem intervenção manual
+        </li>
+        <li>
+          <strong>Experiência do usuário:</strong> Interface clara sobre
+          disponibilidade
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

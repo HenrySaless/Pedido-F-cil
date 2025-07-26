@@ -295,9 +295,16 @@ async function renderPedidosUsuarios() {
           <button class="btn-primary" onclick="verDetalhesPedido('${
             pedido.id
           }')">Ver Detalhes</button>
-          <button class="btn-primary" onclick="atualizarStatusPedido('${
-            pedido.id
-          }')">Atualizar</button>
+          ${
+            pedido.status === "pendente"
+              ? `
+            <button class="btn-success" onclick="atualizarStatusPedido('${pedido.id}', 'entregue')">✓ Entregar</button>
+            <button class="btn-warning" onclick="atualizarStatusPedido('${pedido.id}', 'cancelado')">✗ Cancelar</button>
+          `
+              : `
+            <button class="btn-primary" onclick="atualizarStatusPedido('${pedido.id}')">Atualizar</button>
+          `
+          }
         </div>
       `;
       ordersList.appendChild(card);
@@ -336,23 +343,28 @@ window.verDetalhesPedido = async function (id) {
   }
 };
 
-window.atualizarStatusPedido = async function (id) {
+window.atualizarStatusPedido = async function (id, novoStatus = null) {
   try {
     const result = await listarPedidos();
     if (result.success) {
       const pedido = result.pedidos.find((p) => p.id === id);
       if (pedido) {
-        let novoStatus = "pendente";
-        if (!pedido.status || pedido.status === "pendente")
-          novoStatus = "preparo";
-        else if (pedido.status === "preparo") novoStatus = "entregue";
+        // Se não foi passado um novo status, usar a lógica antiga
+        if (!novoStatus) {
+          if (!pedido.status || pedido.status === "pendente")
+            novoStatus = "preparo";
+          else if (pedido.status === "preparo") novoStatus = "entregue";
+          else novoStatus = "pendente";
+        }
 
         const updateResult = await atualizarStatusPedidoFirebase(
           id,
           novoStatus
         );
         if (updateResult.success) {
+          alert(`Status atualizado para: ${novoStatus}`);
           renderPedidosUsuarios();
+          renderEstoqueAdmin(); // Atualizar estoque se necessário
           atualizarContadores();
         } else {
           alert("Erro ao atualizar status: " + updateResult.error);

@@ -337,6 +337,40 @@ body {
   background: var(--primary);
   color: #fff;
 }
+
+/* Estilos para produtos sem estoque */
+.product-card.sem-estoque {
+  opacity: 0.6;
+  filter: grayscale(30%);
+}
+
+.product-card.sem-estoque .product-img {
+  filter: grayscale(50%);
+}
+
+.estoque-info {
+  font-size: 0.85rem;
+  color: #28a745;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.estoque-info.sem-estoque {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.add-btn.disabled {
+  background: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+.add-btn.disabled:hover {
+  background: #ccc !important;
+  transform: none !important;
+}
 .footer-nav {
   position: fixed;
   left: 0;

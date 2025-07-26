@@ -134,12 +134,38 @@ export async function excluirProduto(id) {
 // Criar novo pedido
 export async function criarPedido(pedidoData) {
   try {
+    // Primeiro, verificar se há estoque suficiente
+    const produtoResult = await buscarProduto(pedidoData.produtoId);
+    if (!produtoResult.success) {
+      return { success: false, error: "Produto não encontrado" };
+    }
+
+    const produto = produtoResult.produto;
+    const estoqueAtual = produto.maxQtd || 0;
+    const quantidadeSolicitada = pedidoData.qtd || 0;
+
+    if (quantidadeSolicitada > estoqueAtual) {
+      return {
+        success: false,
+        error: `Estoque insuficiente. Disponível: ${estoqueAtual}, Solicitado: ${quantidadeSolicitada}`,
+      };
+    }
+
+    // Criar o pedido
     const docRef = await addDoc(collection(db, "pedidos"), {
       ...pedidoData,
       status: "pendente",
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
+
+    // Atualizar o estoque do produto
+    const novoEstoque = estoqueAtual - quantidadeSolicitada;
+    await updateDoc(doc(db, "produtos", pedidoData.produtoId), {
+      maxQtd: novoEstoque,
+      updatedAt: serverTimestamp(),
+    });
+
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error("Erro ao criar pedido:", error);
@@ -201,6 +227,28 @@ export async function listarPedidosPorUsuario(userId) {
 export async function atualizarStatusPedido(id, novoStatus) {
   try {
     const docRef = doc(db, "pedidos", id);
+
+    // Se o status for cancelado ou rejeitado, restaurar o estoque
+    if (novoStatus === "cancelado" || novoStatus === "rejeitado") {
+      const pedidoDoc = await getDoc(docRef);
+      if (pedidoDoc.exists()) {
+        const pedidoData = pedidoDoc.data();
+        const produtoResult = await buscarProduto(pedidoData.produtoId);
+
+        if (produtoResult.success) {
+          const produto = produtoResult.produto;
+          const estoqueAtual = produto.maxQtd || 0;
+          const quantidadeRestaurar = pedidoData.qtd || 0;
+          const novoEstoque = estoqueAtual + quantidadeRestaurar;
+
+          await updateDoc(doc(db, "produtos", pedidoData.produtoId), {
+            maxQtd: novoEstoque,
+            updatedAt: serverTimestamp(),
+          });
+        }
+      }
+    }
+
     await updateDoc(docRef, {
       status: novoStatus,
       updatedAt: serverTimestamp(),
