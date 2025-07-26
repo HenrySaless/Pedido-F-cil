@@ -36,12 +36,50 @@ export async function listarProdutos() {
   try {
     const querySnapshot = await getDocs(collection(db, "produtos"));
     const produtos = [];
+    const chavesVistas = new Set();
+
     querySnapshot.forEach((doc) => {
-      produtos.push({
+      const produto = {
         id: doc.id,
         ...doc.data(),
-      });
+      };
+
+      // Criar chave única para deduplicação
+      const nomeKey = produto.nome
+        ? produto.nome
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, " ")
+            .trim()
+        : "";
+      const precoKey = Number(produto.preco || 0).toFixed(2);
+      const categoriaKey = produto.categoria
+        ? produto.categoria
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, " ")
+            .trim()
+        : "";
+      const lojaKey = produto.loja
+        ? produto.loja
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, " ")
+            .trim()
+        : "";
+      const chave =
+        nomeKey + "-" + precoKey + "-" + categoriaKey + "-" + lojaKey;
+
+      if (!chavesVistas.has(chave)) {
+        produtos.push(produto);
+        chavesVistas.add(chave);
+      }
     });
+
+    console.log("Produtos únicos retornados do Firebase:", produtos.length);
     return { success: true, produtos };
   } catch (error) {
     console.error("Erro ao listar produtos:", error);
@@ -131,11 +169,7 @@ export async function listarPedidos() {
 // Listar pedidos por usuário
 export async function listarPedidosPorUsuario(userId) {
   try {
-    const q = query(
-      collection(db, "pedidos"),
-      where("userId", "==", userId),
-      orderBy("createdAt", "desc")
-    );
+    const q = query(collection(db, "pedidos"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     const pedidos = [];
     querySnapshot.forEach((doc) => {
@@ -144,6 +178,18 @@ export async function listarPedidosPorUsuario(userId) {
         ...doc.data(),
       });
     });
+
+    // Ordenar localmente por data de criação (mais recente primeiro)
+    pedidos.sort((a, b) => {
+      const dateA = a.createdAt
+        ? new Date(a.createdAt.seconds * 1000)
+        : new Date(a.data || 0);
+      const dateB = b.createdAt
+        ? new Date(b.createdAt.seconds * 1000)
+        : new Date(b.data || 0);
+      return dateB - dateA;
+    });
+
     return { success: true, pedidos };
   } catch (error) {
     console.error("Erro ao listar pedidos do usuário:", error);
@@ -162,6 +208,21 @@ export async function atualizarStatusPedido(id, novoStatus) {
     return { success: true };
   } catch (error) {
     console.error("Erro ao atualizar status do pedido:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Atualizar pedido
+export async function atualizarPedido(id, pedidoData) {
+  try {
+    const docRef = doc(db, "pedidos", id);
+    await updateDoc(docRef, {
+      ...pedidoData,
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao atualizar pedido:", error);
     return { success: false, error: error.message };
   }
 }

@@ -252,13 +252,33 @@ async function renderPedidosUsuarios() {
       return;
     }
 
+    // Agrupar pedidos por usuário e produto para evitar duplicação
+    const pedidosAgrupados = {};
+    pedidos.forEach((pedido) => {
+      const key = `${pedido.userId}-${pedido.produtoId || pedido.id}`;
+      if (pedidosAgrupados[key]) {
+        pedidosAgrupados[key].qtd += pedido.qtd;
+        pedidosAgrupados[key].total +=
+          pedido.total || pedido.preco * pedido.qtd;
+        // Manter o status mais recente
+        if (pedido.status === "pendente") {
+          pedidosAgrupados[key].status = "pendente";
+        }
+      } else {
+        pedidosAgrupados[key] = {
+          ...pedido,
+          total: pedido.total || pedido.preco * pedido.qtd,
+        };
+      }
+    });
+
     ordersList.innerHTML = "";
-    pedidos.forEach((pedido, idx) => {
+    Object.values(pedidosAgrupados).forEach((pedido) => {
       const card = document.createElement("div");
       card.className = "order-card";
       card.innerHTML = `
         <div class="order-header">
-          <span class="order-client">${pedido.userName || pedido.nome}</span>
+          <span class="order-client">${pedido.userName || "Cliente"}</span>
           <span class="order-status ${pedido.status || "pendente"}">${
         (pedido.status || "pendente").charAt(0).toUpperCase() +
         (pedido.status || "pendente").slice(1)
@@ -266,7 +286,9 @@ async function renderPedidosUsuarios() {
         </div>
         <div class="order-items">${pedido.qtd}x ${pedido.nome}</div>
         <div class="order-meta">
-          Preço: R$ ${(pedido.preco * pedido.qtd).toFixed(2).replace(".", ",")}
+          Preço: R$ ${(pedido.total || pedido.preco * pedido.qtd)
+            .toFixed(2)
+            .replace(".", ",")}
           ${pedido.userLocation ? `<br>📍 ${pedido.userLocation}` : ""}
         </div>
         <div class="order-actions">

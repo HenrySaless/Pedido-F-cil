@@ -155,12 +155,36 @@ let produtos = [];
 async function carregarProdutos() {
   try {
     const result = await listarProdutos();
-    if (result.success) {
-      produtos = result.produtos;
+    if (result.success && Array.isArray(result.produtos)) {
+      console.log("Produtos carregados do Firebase:", result.produtos.length);
+
+      // Remover duplicados na fonte
+      const produtosUnicos = [];
+      const chavesVistas = new Set();
+
+      result.produtos.forEach((produto) => {
+        const nomeKey = normalizarTexto(produto.nome);
+        const precoKey = Number(produto.preco).toFixed(2);
+        const categoriaKey = normalizarTexto(produto.categoria || "");
+        const lojaKey = normalizarTexto(produto.loja || "");
+        const chave =
+          nomeKey + "-" + precoKey + "-" + categoriaKey + "-" + lojaKey;
+
+        if (!chavesVistas.has(chave)) {
+          produtosUnicos.push(produto);
+          chavesVistas.add(chave);
+        }
+      });
+
+      console.log(
+        "Produtos únicos após deduplicação na fonte:",
+        produtosUnicos.length
+      );
+      produtos = produtosUnicos;
     } else {
       console.error("Erro ao carregar produtos:", result.error);
       // Usar produtos mockados em caso de erro
-      produtos = [
+      produtos = window.PRODUTOS || [
         {
           id: "mock1",
           nome: "Hambúrguer Clássico",
@@ -196,7 +220,7 @@ async function carregarProdutos() {
   } catch (error) {
     console.error("Erro ao carregar produtos:", error);
     // Usar produtos mockados em caso de erro
-    produtos = [
+    produtos = window.PRODUTOS || [
       {
         id: "mock1",
         nome: "Hambúrguer Clássico",
@@ -238,8 +262,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     return;
   }
 
-  // Carregar produtos
-  carregarProdutos();
+  // Carregar produtos apenas uma vez na inicialização
+  await carregarProdutos();
 
   // Configurar drawer
   const menuBtn = document.getElementById("menuBtn");
@@ -324,13 +348,25 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 let categoriaAtual = "todos";
 
+function normalizarTexto(texto) {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .replace(/\s+/g, " ") // espaços múltiplos para um só
+    .trim()
+    .toLowerCase();
+}
+
+let renderProdutosCount = 0;
+
 async function renderProdutos() {
+  renderProdutosCount++;
+  console.log("renderProdutos chamada:", renderProdutosCount, "vez(es)");
   const lista = document.getElementById("productsList");
   const busca = document.getElementById("searchInput").value.toLowerCase();
   lista.innerHTML = "";
 
-  // Recarregar produtos do Firebase para garantir dados atualizados
-  await carregarProdutos();
+  console.log("Total de produtos carregados:", produtos.length);
 
   let filtrados = produtos.filter(
     (p) =>
@@ -338,12 +374,49 @@ async function renderProdutos() {
       (p.nome.toLowerCase().includes(busca) ||
         p.loja.toLowerCase().includes(busca))
   );
-  if (filtrados.length === 0) {
+
+  console.log("Produtos filtrados:", filtrados.length);
+
+  // Remover duplicados por nome normalizado + preco + categoria + loja
+  const produtosUnicos = [];
+  const chavesVistas = new Set();
+  const produtosDuplicados = [];
+
+  filtrados.forEach((produto) => {
+    const nomeKey = normalizarTexto(produto.nome);
+    const precoKey = Number(produto.preco).toFixed(2);
+    const categoriaKey = normalizarTexto(produto.categoria || "");
+    const lojaKey = normalizarTexto(produto.loja || "");
+    const chave = nomeKey + "-" + precoKey + "-" + categoriaKey + "-" + lojaKey;
+
+    console.log(
+      "Produto:",
+      produto.nome,
+      "| Categoria:",
+      produto.categoria,
+      "| Chave:",
+      chave
+    );
+
+    if (!chavesVistas.has(chave)) {
+      produtosUnicos.push(produto);
+      chavesVistas.add(chave);
+    } else {
+      produtosDuplicados.push(produto);
+    }
+  });
+
+  console.log("Produtos únicos:", produtosUnicos.length);
+  console.log("Produtos duplicados removidos:", produtosDuplicados.length);
+  console.log("Chaves únicas dos produtos exibidos:", Array.from(chavesVistas));
+
+  if (produtosUnicos.length === 0) {
     lista.innerHTML =
       '<p style="text-align:center;color:#aaa;">Nenhum produto encontrado.</p>';
     return;
   }
-  filtrados.forEach((produto) => {
+
+  produtosUnicos.forEach((produto) => {
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
@@ -412,9 +485,6 @@ async function adicionarProdutoQtd(nome, id) {
 }
 
 window.adicionarProdutoQtdERedirecionar = async function (nome, id) {
-  // Recarregar produtos para garantir dados atualizados
-  await carregarProdutos();
-
   const input = document.getElementById("qtd-" + id);
   const qtd = parseInt(input.value, 10);
   const max = parseInt(input.max, 10);
@@ -428,7 +498,10 @@ window.adicionarProdutoQtdERedirecionar = async function (nome, id) {
   }
 
   const produto = produtos.find((p) => p.id === id);
-  if (!produto) return;
+  if (!produto) {
+    console.error("Produto não encontrado:", id);
+    return;
+  }
 
   // Obter informações do usuário logado
   const userId = localStorage.getItem("userId");
@@ -488,42 +561,17 @@ document
   .getElementById("searchInput")
   .addEventListener("input", renderProdutos);
 
-// Inicialização
-document.addEventListener("DOMContentLoaded", renderProdutos);
-
 // Drawer (menu lateral)
-const menuBtn = document.getElementById("menuBtn");
-const drawerMenu = document.getElementById("drawerMenu");
-const drawerOverlay = document.getElementById("drawerOverlay");
-const drawerCloseBtn = document.getElementById("drawerCloseBtn");
-
 function openDrawer() {
+  const drawerMenu = document.getElementById("drawerMenu");
+  const drawerOverlay = document.getElementById("drawerOverlay");
   drawerMenu.classList.add("active");
   drawerOverlay.classList.add("active");
 }
+
 function closeDrawer() {
+  const drawerMenu = document.getElementById("drawerMenu");
+  const drawerOverlay = document.getElementById("drawerOverlay");
   drawerMenu.classList.remove("active");
   drawerOverlay.classList.remove("active");
 }
-menuBtn.addEventListener("click", openDrawer);
-drawerOverlay.addEventListener("click", closeDrawer);
-drawerCloseBtn.addEventListener("click", closeDrawer);
-
-// Redirecionamento dos botões do menu
-const drawerHome = document.getElementById("drawerHome");
-const drawerPedidos = document.getElementById("drawerPedidos");
-const drawerEnderecos = document.getElementById("drawerEnderecos");
-const drawerConfig = document.getElementById("drawerConfig");
-
-drawerHome.onclick = function () {
-  window.location.href = "cardapio.html";
-};
-drawerPedidos.onclick = function () {
-  window.location.href = "meus-pedidos.html";
-};
-drawerEnderecos.onclick = function () {
-  alert("Funcionalidade de endereços em breve!");
-};
-drawerConfig.onclick = function () {
-  alert("Funcionalidade de configurações em breve!");
-};

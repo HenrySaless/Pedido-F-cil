@@ -7,13 +7,27 @@ document.addEventListener("DOMContentLoaded", async function () {
   const pedidosList = document.getElementById("pedidosList");
   const totalPedidos = document.getElementById("totalPedidos");
 
+  // Verificar se usuário está logado
+  const userId = localStorage.getItem("userId");
+  const userName = localStorage.getItem("userName");
+
+  if (!userId) {
+    alert("Você precisa estar logado para acessar esta página.");
+    window.location.href = "../login/login.html";
+    return;
+  }
+
+  // Atualizar nome do usuário na interface
+  const userNameElement = document.querySelector(".user-name");
+  if (userNameElement) {
+    userNameElement.textContent = `Olá, ${userName || "Usuário"}!`;
+  }
+
   async function renderPedidos() {
     pedidosList.innerHTML =
       '<p style="text-align:center;color:#666;padding:20px;">Carregando pedidos...</p>';
 
     try {
-      // TODO: Usar ID do usuário logado
-      const userId = "usuario_anonimo";
       const result = await listarPedidosPorUsuario(userId);
 
       if (!result.success) {
@@ -35,9 +49,26 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
       }
 
-      pedidosList.innerHTML = "";
+      // Agrupar pedidos por produtoId para evitar duplicação
+      const pedidosAgrupados = {};
       pedidos.forEach((p) => {
-        const subtotal = p.preco * p.qtd;
+        if (p.status === "pendente") {
+          const key = p.produtoId || p.id;
+          if (pedidosAgrupados[key]) {
+            pedidosAgrupados[key].qtd += p.qtd;
+            pedidosAgrupados[key].total += p.total || p.preco * p.qtd;
+          } else {
+            pedidosAgrupados[key] = {
+              ...p,
+              total: p.total || p.preco * p.qtd,
+            };
+          }
+        }
+      });
+
+      pedidosList.innerHTML = "";
+      Object.values(pedidosAgrupados).forEach((p) => {
+        const subtotal = p.total || p.preco * p.qtd;
         total += subtotal;
         const div = document.createElement("div");
         div.className = "product-card";
@@ -84,8 +115,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     setTimeout(async () => {
       try {
-        // TODO: Usar ID do usuário logado
-        const userId = "usuario_anonimo";
         const result = await limparPedidosUsuario(userId);
         if (result.success) {
           alert("Pedidos limpos com sucesso!");
