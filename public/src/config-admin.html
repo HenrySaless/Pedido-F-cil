@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <link rel="icon" type="image/png" href="./publicssss/logo.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configurar Admin - PedidoFácil</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .config-container {
+        max-width: 500px;
+        margin: 100px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .config-title {
+        color: var(--primary);
+        margin-bottom: 20px;
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      .config-info {
+        background: #e3f2fd;
+        border: 1px solid #2196f3;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: left;
+      }
+
+      .config-info h3 {
+        color: #1976d2;
+        margin-bottom: 10px;
+      }
+
+      .config-info p {
+        color: #1565c0;
+        line-height: 1.6;
+        margin: 8px 0;
+      }
+
+      .config-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin: 10px;
+      }
+
+      .config-btn:hover {
+        background: var(--secondary);
+      }
+
+      .config-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .status-message {
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        font-weight: 600;
+      }
+
+      .status-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .status-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s;
+      }
+
+      .back-btn:hover {
+        background: var(--secondary);
+      }
+    </style>
+  </head>
+  <body>
+    <a href="./index.html" class="back-btn">← Voltar</a>
+
+    <div class="config-container">
+      <h1 class="config-title">👑 Configurar Admin</h1>
+
+      <div id="statusMessage"></div>
+
+      <div class="config-info">
+        <h3>ℹ️ Como Funciona</h3>
+        <p><strong>1.</strong> Faça login com Google usando o email do admin</p>
+        <p><strong>2.</strong> Clique em "Configurar como Admin"</p>
+        <p>
+          <strong>3.</strong> O sistema marcará seu perfil como admin no
+          Firestore
+        </p>
+        <p>
+          <strong>4.</strong> Próximos logins com Google irão para o painel
+          admin
+        </p>
+      </div>
+
+      <button class="config-btn" id="configBtn" onclick="configurarComoAdmin()">
+        🔧 Configurar como Admin
+      </button>
+
+      <button class="config-btn" onclick="testarLogin()">
+        🧪 Testar Login Admin
+      </button>
+
+      <div style="margin-top: 30px; text-align: center">
+        <p><strong>Após configurar:</strong></p>
+        <p>1. Vá para <a href="login/login.html">Login</a></p>
+        <p>2. Use "Entrar com Google" com o email do admin</p>
+        <p>3. Você será redirecionado automaticamente para o painel admin</p>
+      </div>
+    </div>
+
+    <script type="module" src="config-admin.js"></script>
+  </body>
+</html>

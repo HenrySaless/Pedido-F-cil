@@ -98,9 +98,23 @@ body {
 .user-location {
   font-size: 0.95rem;
   color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  padding: 4px 8px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
+}
+
+.user-location:hover {
+  color: var(--primary);
+  background: rgba(231, 90, 26, 0.1);
+  transform: scale(1.05);
+}
+
+.user-location:active {
+  transform: scale(0.95);
 }
 .search-section {
   padding: 18px 16px 0 16px;

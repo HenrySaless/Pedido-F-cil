@@ -1,7 +1,7 @@
 import { listarProdutos, criarPedido } from "../services/firebaseService.js";
 
 // Verificar se usuário está logado
-function verificarLogin() {
+async function verificarLogin() {
   const userId = localStorage.getItem("userId");
   const userName = localStorage.getItem("userName");
   const userLocation = localStorage.getItem("userLocation");
@@ -20,15 +20,132 @@ function verificarLogin() {
     userNameElement.textContent = `Olá, ${userName || "Usuário"}`;
   }
 
-  if (userLocationElement) {
-    if (userLocation) {
+  // Verificar se tem localização, se não tiver, solicitar
+  if (!userLocation || userLocation === "") {
+    await solicitarLocalizacao();
+  } else {
+    if (userLocationElement) {
       userLocationElement.innerHTML = `<i data-lucide="map-pin"></i> ${userLocation}`;
-    } else {
-      userLocationElement.innerHTML = `<i data-lucide="map-pin"></i> Endereço não informado`;
     }
   }
 
   return true;
+}
+
+// Função para solicitar localização do usuário
+async function solicitarLocalizacao() {
+  const userLocationElement = document.querySelector(".user-location");
+
+  // Mostrar mensagem de carregamento
+  if (userLocationElement) {
+    userLocationElement.innerHTML = `<i data-lucide="map-pin"></i> Solicitando localização...`;
+  }
+
+  // Perguntar ao usuário se quer usar GPS ou digitar manualmente
+  const usarGPS = confirm(
+    "Deseja usar sua localização atual (GPS) ou digitar o endereço manualmente?\n\n" +
+      "• Clique em 'OK' para usar GPS\n" +
+      "• Clique em 'Cancelar' para digitar manualmente"
+  );
+
+  if (usarGPS) {
+    try {
+      // Tentar obter localização via GPS
+      const position = await getCurrentPosition();
+      const { latitude, longitude } = position.coords;
+
+      // Tentar obter endereço via reverse geocoding
+      const endereco = await obterEnderecoPorCoordenadas(latitude, longitude);
+
+      if (endereco) {
+        localStorage.setItem("userLocation", endereco);
+        if (userLocationElement) {
+          userLocationElement.innerHTML = `<i data-lucide="map-pin"></i> ${endereco}`;
+        }
+        alert("✅ Localização obtida com sucesso!");
+      } else {
+        // Se não conseguir o endereço, usar coordenadas
+        const coordsText = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+        localStorage.setItem("userLocation", coordsText);
+        if (userLocationElement) {
+          userLocationElement.innerHTML = `<i data-lucide="map-pin"></i> ${coordsText}`;
+        }
+        alert("📍 Localização obtida (coordenadas GPS)");
+      }
+    } catch (error) {
+      console.error("Erro ao obter localização:", error);
+      alert(
+        "❌ Não foi possível obter sua localização. Por favor, digite manualmente."
+      );
+      solicitarEnderecoManual();
+    }
+  } else {
+    solicitarEnderecoManual();
+  }
+}
+
+// Função para solicitar endereço manualmente
+function solicitarEnderecoManual() {
+  const userLocationElement = document.querySelector(".user-location");
+
+  const enderecoManual = prompt(
+    "Por favor, informe seu endereço completo para entrega:\n\n" +
+      "Exemplo: Rua das Flores, 123 - Centro, São Paulo - SP"
+  );
+
+  if (enderecoManual && enderecoManual.trim()) {
+    localStorage.setItem("userLocation", enderecoManual.trim());
+    if (userLocationElement) {
+      userLocationElement.innerHTML = `<i data-lucide="map-pin"></i> ${enderecoManual.trim()}`;
+    }
+    alert("✅ Endereço salvo com sucesso!");
+  } else {
+    // Se não informar, usar endereço padrão
+    const enderecoPadrao = "Endereço não informado";
+    localStorage.setItem("userLocation", enderecoPadrao);
+    if (userLocationElement) {
+      userLocationElement.innerHTML = `<i data-lucide="map-pin"></i> ${enderecoPadrao}`;
+    }
+    alert("⚠️ Endereço não informado. Você pode atualizar depois no menu.");
+  }
+}
+
+// Função para obter posição atual (Promise wrapper)
+function getCurrentPosition() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error("Geolocalização não suportada"));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(resolve, reject, {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 60000,
+    });
+  });
+}
+
+// Função para obter endereço por coordenadas (simulada)
+async function obterEnderecoPorCoordenadas(latitude, longitude) {
+  try {
+    // Usar a API de Geocoding do Google (se disponível) ou simular
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=YOUR_API_KEY`
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.results && data.results[0]) {
+        return data.results[0].formatted_address;
+      }
+    }
+  } catch (error) {
+    console.log("API de geocoding não disponível, usando coordenadas");
+  }
+
+  // Retornar null para usar coordenadas
+  return null;
 }
 
 // Produtos
@@ -115,9 +232,9 @@ async function carregarProdutos() {
 }
 
 // Inicialização
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   // Verificar login primeiro
-  if (!verificarLogin()) {
+  if (!(await verificarLogin())) {
     return;
   }
 
@@ -151,9 +268,10 @@ document.addEventListener("DOMContentLoaded", function () {
       () => (window.location.href = "meus-pedidos.html")
     );
   if (drawerEnderecos)
-    drawerEnderecos.addEventListener("click", () =>
-      alert("Funcionalidade em desenvolvimento")
-    );
+    drawerEnderecos.addEventListener("click", async () => {
+      await solicitarLocalizacao();
+      closeDrawer();
+    });
   if (drawerConfig)
     drawerConfig.addEventListener("click", () =>
       alert("Funcionalidade em desenvolvimento")
@@ -192,6 +310,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Renderizar produtos iniciais
   renderProdutos();
+
+  // Adicionar evento de clique no ícone de localização para atualizar
+  const userLocationElement = document.querySelector(".user-location");
+  if (userLocationElement) {
+    userLocationElement.style.cursor = "pointer";
+    userLocationElement.title = "Clique para atualizar localização";
+    userLocationElement.addEventListener("click", async () => {
+      await solicitarLocalizacao();
+    });
+  }
 });
 
 let categoriaAtual = "todos";

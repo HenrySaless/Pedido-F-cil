@@ -18,71 +18,9 @@ toggleConfirmar.addEventListener("click", function () {
     confirmarInput.type === "password" ? "👁️" : "🙈";
 });
 
-// Variáveis para endereço
-let userLocation = null;
-let enderecoDigitado = "";
-
 // Elementos de endereço
-const btnUsarLocalizacao = document.getElementById("btnUsarLocalizacao");
-const btnDigitarEndereco = document.getElementById("btnDigitarEndereco");
-const enderecoContainer = document.getElementById("enderecoContainer");
-const localizacaoInfo = document.getElementById("localizacaoInfo");
-const coordsText = document.getElementById("coordsText");
 const enderecoInput = document.getElementById("endereco");
-
-// Função para obter localização
-async function obterLocalizacao() {
-  if (!navigator.geolocation) {
-    alert("Geolocalização não é suportada pelo seu navegador.");
-    return;
-  }
-
-  try {
-    btnUsarLocalizacao.textContent = "🔄 Obtendo localização...";
-    btnUsarLocalizacao.disabled = true;
-
-    const position = await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000,
-      });
-    });
-
-    userLocation = {
-      lat: position.coords.latitude,
-      lng: position.coords.longitude,
-    };
-
-    coordsText.textContent = `${userLocation.lat.toFixed(
-      6
-    )}, ${userLocation.lng.toFixed(6)}`;
-    localizacaoInfo.style.display = "flex";
-    enderecoContainer.style.display = "none";
-
-    btnUsarLocalizacao.textContent = "✅ Localização obtida";
-    btnUsarLocalizacao.classList.add("active");
-    btnDigitarEndereco.classList.remove("active");
-  } catch (error) {
-    alert("Erro ao obter localização: " + error.message);
-    btnUsarLocalizacao.textContent = "📍 Usar minha localização";
-    btnUsarLocalizacao.disabled = false;
-  }
-}
-
-// Event listeners para endereço
-btnUsarLocalizacao.addEventListener("click", obterLocalizacao);
-
-btnDigitarEndereco.addEventListener("click", function () {
-  enderecoContainer.style.display = "block";
-  localizacaoInfo.style.display = "none";
-  userLocation = null;
-
-  btnDigitarEndereco.classList.add("active");
-  btnUsarLocalizacao.classList.remove("active");
-  btnUsarLocalizacao.textContent = "📍 Usar minha localização";
-  btnUsarLocalizacao.disabled = false;
-});
+const complementoInput = document.getElementById("complemento");
 
 // Formulário de cadastro
 const form = document.getElementById("cadastroForm");
@@ -104,8 +42,8 @@ form.onsubmit = async function (e) {
   }
 
   // Verificar se tem endereço
-  if (!userLocation && !enderecoInput.value.trim()) {
-    alert("Por favor, forneça um endereço ou use sua localização.");
+  if (!enderecoInput.value.trim()) {
+    alert("Por favor, forneça um endereço.");
     return;
   }
 
@@ -113,14 +51,18 @@ form.onsubmit = async function (e) {
     const cred = await createUserWithEmailAndPassword(auth, email, senha);
 
     // Preparar dados do usuário
+    const enderecoCompleto = enderecoInput.value.trim();
+    const complemento = complementoInput.value.trim();
+    const enderecoFinal = complemento
+      ? `${enderecoCompleto} - ${complemento}`
+      : enderecoCompleto;
+
     const userData = {
       uid: cred.user.uid,
       nome: nome,
       email: email,
-      endereco: userLocation
-        ? `${userLocation.lat}, ${userLocation.lng}`
-        : enderecoInput.value.trim(),
-      localizacao: userLocation,
+      endereco: enderecoFinal,
+      complemento: complemento,
       createdAt: new Date(),
     };
 
@@ -133,6 +75,7 @@ form.onsubmit = async function (e) {
       localStorage.setItem("userId", cred.user.uid);
       localStorage.setItem("userName", nome);
       localStorage.setItem("userLocation", userData.endereco);
+      localStorage.setItem("userComplemento", complemento);
 
       alert("Cadastro realizado com sucesso!");
       window.location.href = "../cardápiol/cardapio.html";
